@@ -93,6 +93,9 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
         //get all images from iframe, then match them to images in list to add event listeners
         //possible error occurring if list of images from website is different from list of images pulled from api
         //right now it just lets the user know there's a mismatch and deselects
+
+        //Case: PG element references something outside of the book
+            //Not available for alt text editing at this time
         const handleIframeLoad = () => {
             try {
                 const images = iframe.contentDocument.body.querySelectorAll("img");
@@ -107,7 +110,7 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
                         if(list_img !== null) {list_img.click();}
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            altOnClick("This image does not exist in the Project Gutenberg Database yet.");
+                            altOnClick("This image is not available for alt text editing at this time.");
                             setNumSelected(0);
                             setRadioValue("NO IMAGE");
                         }
