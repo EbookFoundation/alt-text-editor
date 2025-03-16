@@ -15,6 +15,7 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
     const [radioValue, setRadioValue] = useState('');
     const [iframeImgObj, setIframeImgObj] = useState({});
     const [alts, setAlts] = useState(null);
+    const [loadedImgList, setLoadedImgList] = useState(false);
 
     //get csrf token for django auth with name == 'csrftoken'
     function getCookie(name) {
@@ -53,38 +54,31 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
             );
     }
 
+    async function getURLs() {
+        const img_api_obj_list = await axios.get('http://127.0.0.1:8000/api/documents/1/',
+            {'withCredentials': true,
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+                },
+             }).then((response) => {
+                setLoadedImgList(true);
+                return response.data.imgs;
+                });
+         
+        //currently pulling from local file instead of api
+        const altjson = await fetch("alt67098.json").then(response => response.json());
+
+        const render = await Promise.all(img_api_obj_list);
+        setImgList(render);
+        setNumImgs(render.length);
+        setAlts(altjson);
+        
+    }
+
     //api returns list of urls, not list of objs -> need to request each url which has high load time (1.5s)
     useEffect(() => {
-        //get all images from urls
-        async function getURLs() {
-            const img_api_obj_list = await axios.get('http://127.0.0.1:8000/api/documents/1/',
-                {'withCredentials': true,
-                    headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                    },
-                 }).then((response) => response.data.imgs);
-            const img_col_list = img_api_obj_list.map(async (imgURL) => {
-                return await axios.get(imgURL,
-                    {'withCredentials': true,
-                        headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                        },
-                    }).then((response) => response.data);
-            });
-            //currently pulling from local file instead of api
-            const altjson = await fetch("alt67098.json").then(response => response.json());
-
-            const render = await Promise.all(img_col_list);
-            setImgList(render);
-            setNumImgs(render.length);
-            setAlts(altjson);
-            
-        }
-
         getURLs();
 
         //useEffect triggers before refs are assigned
@@ -131,15 +125,38 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
         };
     }, []);
 
-    return (
 
-        //move mapped images into new file again so render happens and scroll updates at same time?
+    if(loadedImgList) {
+        return (
+
+            //move mapped images into new file again so render happens and scroll updates at same time?
+            <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
+                <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
+                    <Row ref={listRef} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
+                        {imgList.map((img, index) => mappedImages(img.img_id, img.image, index))}
+                    </Row>
+                </Container>
+            </Accordion.Body>
+        );
+    }
+
+    //placeholders for api load wait
+    return (
         <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
-            <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
-                <Row ref={listRef} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
-                    {imgList.map((img, index) => mappedImages(img.img_id, img.image, index))}
-                </Row>
-            </Container>
-        </Accordion.Body>
+                <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
+                    <Row className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}}>
+                        {
+                            Array.from({length: 6})
+                            .map((_, index) => (
+                                <Col className='px-2 py-2'>
+                                    <svg width='170' height='204.73'>
+                                        <rect width="150" height="184.73" x='10' y='10' rx='10' ry='10' fill="#D3D3D3" strokeWidth="1" stroke="blue"></rect>
+                                    </svg>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                </Container>
+            </Accordion.Body>
     );
 }
