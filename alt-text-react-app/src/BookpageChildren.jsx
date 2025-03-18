@@ -8,30 +8,30 @@ import Row from 'react-bootstrap/Row';
 
 import { useState, useEffect } from 'react';
 
+//get csrf token for django auth with name == 'csrftoken'
+export function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
-export default function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, setNumSelected}) {
+
+export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, setNumSelected}) {
 
     const [imgList, setImgList] = useState([]);
     const [radioValue, setRadioValue] = useState('');
     const [iframeImgObj, setIframeImgObj] = useState({});
     const [alts, setAlts] = useState(null);
     const [loadedImgList, setLoadedImgList] = useState(false);
-
-    //get csrf token for django auth with name == 'csrftoken'
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     const mappedImages = function (img_id, img_src, index) {
 
@@ -58,7 +58,6 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
         const img_api_obj_list = await axios.get('http://127.0.0.1:8000/api/documents/1/',
             {'withCredentials': true,
                 headers: {
-                'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
                 },
@@ -81,8 +80,7 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
     useEffect(() => {
         getURLs();
 
-        //useEffect triggers before refs are assigned
-        const iframe = document.querySelector("iframe");
+        const iframe = iframeRef.current;
 
         //get all images from iframe, then match them to images in list to add event listeners
         //possible error occurring if list of images from website is different from list of images pulled from api
@@ -148,7 +146,7 @@ export default function BookpageChildren({altOnClick, listRef, iframeRef, setNum
                         {
                             Array.from({length: 6})
                             .map((_, index) => (
-                                <Col className='px-2 py-2'>
+                                <Col className='px-2 py-2' key={index}>
                                     <svg width='170' height='204.73'>
                                         <rect width="150" height="184.73" x='10' y='10' rx='10' ry='10' fill="#D3D3D3" strokeWidth="1" stroke="blue"></rect>
                                     </svg>

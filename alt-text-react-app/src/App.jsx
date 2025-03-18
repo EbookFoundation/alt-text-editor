@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import './App.css';
 import Stack from 'react-bootstrap/Stack';
 import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -11,6 +11,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import 'bootstrap/dist/css/bootstrap.css';
 import Bookpage from './Bookpage';
 import NavbarDiv from './NavbarDiv';
+import SubmitButton from './SubmitButton'
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
 
   const iframe = useRef();
   const list_row = useRef();
+  const user_input = useRef();
 
   const leftButtonClick = () => {
     if (numSelected <= 1) {return;}
@@ -69,11 +71,9 @@ function App() {
               <Form.Control id="ai" placeholder="ai suggestion"></Form.Control>
             </InputGroup>
             <InputGroup>
-              <Form.Control id="userInput" placeholder="user input"></Form.Control>
+              <Form.Control id="userInput" ref={user_input} placeholder="user input"></Form.Control>
             </InputGroup>
-            <Button>
-                Submit
-            </Button>
+            <SubmitButton userInput={user_input}/>
           </Stack>
         </Col>
       </Row>

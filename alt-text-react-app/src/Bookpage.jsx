@@ -1,5 +1,5 @@
 import Accordion from 'react-bootstrap/Accordion';
-import BookpageChildren from './BookpageChildren';
+import { BookpageChildren}  from './BookpageChildren';
 
 
 export default function Bookpage({altOnClick, setNumImgs, listRef, iframeRef, setNumSelected}) {
