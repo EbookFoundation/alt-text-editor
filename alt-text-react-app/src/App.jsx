@@ -13,16 +13,35 @@ import Bookpage from './Bookpage';
 import NavbarDiv from './NavbarDiv';
 import SubmitButton from './SubmitButton'
 
+// TODO: updating primary keys to match image submissions, 
+// and have separate client save functionality for edits that are yet to be submitted
+
 
 function App() {
 
   const [altText, setAltText] = useState('');
   const [numSelected, setNumSelected] = useState(0);
   const [numImgs, setNumImgs] = useState(0);
+  const [imgIdToPKMap, setImgIdToPKMap] = useState({});
+  const [radioValue, setRadioValue] = useState('');
 
   const iframe = useRef();
   const list_row = useRef();
   const user_input = useRef();
+
+  const stateObj = {
+    "altText": [altText, setAltText],
+    "numSelected": [numSelected, setNumSelected],
+    "numImgs": [numImgs, setNumImgs],
+    "imgIdToPKMap": [imgIdToPKMap, setImgIdToPKMap],
+    "radioValue": [radioValue, setRadioValue],
+  }
+
+  const refObj = {
+    "iframe": iframe,
+    "list_row": list_row,
+    "user_input": user_input
+  }
 
   const leftButtonClick = () => {
     if (numSelected <= 1) {return;}
@@ -49,19 +68,19 @@ function App() {
                   <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                 </svg>
               </Button>
-              <span className='input-group-text'>{numSelected}/{numImgs}</span>
+              <span className='input-group-text'>{stateObj["numSelected"][0]}/{stateObj["numImgs"][0]}</span>
               <Button onClick={rightButtonClick}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right" viewBox="0 0 16 16">
                   <path fillRule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
                 </svg>
               </Button>
             </InputGroup>
-            <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} className="border border-secondary border-4" src="/iframe"></iframe>
+            <iframe ref={refObj["iframe"]} id="book" style={{height: "80vh", width: "auto"}} className="border border-secondary border-4" src="/iframe"></iframe>
           </Stack>
         </Col>
         <Col>
           <Stack className='gap-3'>
-            <Bookpage altOnClick={(text) => {setAltText(text)}} listRef={list_row} iframeRef={iframe} setNumImgs={setNumImgs} setNumSelected={setNumSelected}/>
+            <Bookpage stateObj={stateObj} refObj={refObj}/>
             <InputGroup>
               <FloatingLabel label="Existing Alt Text">
                 <Form.Control id="altText" disabled as='textarea' style={{"height": "100px"}} value={altText}></Form.Control>
@@ -71,9 +90,9 @@ function App() {
               <Form.Control id="ai" placeholder="ai suggestion"></Form.Control>
             </InputGroup>
             <InputGroup>
-              <Form.Control id="userInput" ref={user_input} placeholder="user input"></Form.Control>
+              <Form.Control id="userInput" ref={refObj["user_input"]} placeholder="user input"></Form.Control>
             </InputGroup>
-            <SubmitButton userInput={user_input}/>
+            <SubmitButton userInput={user_input} stateObj={stateObj}/>
           </Stack>
         </Col>
       </Row>

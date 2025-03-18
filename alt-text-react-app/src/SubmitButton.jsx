@@ -4,13 +4,16 @@ import { getCookie } from './BookpageChildren';
 
 
 
-export default function SubmitButton({userInput}) {
+export default function SubmitButton({userInput, stateObj}) {
 
-    async function updateAltTextDatabase(img_id, updated_alt_text) {
+    async function updateAltTextDatabase(pk, updated_alt_text) {
         if(updated_alt_text === null || updated_alt_text === "") {return;}
+        if(stateObj["numSelected"][0] === 0) {return;}
 
-        const alt_id = axios.patch('http://127.0.0.1:8000/api/alts/' + img_id + '/',
-            { "text": updated_alt_text },
+        //update pk of related alt, if successful, then update text in related alt
+        //should be atomic? maybe different approach is needed
+        axios.patch('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
+            { "alt": pk },
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',
@@ -19,24 +22,30 @@ export default function SubmitButton({userInput}) {
                 },
              }
         ).then((response) => {
-            response.data.id;
+            console.log(response);
+            axios.patch('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
+                { "text": updated_alt_text },
+                {'withCredentials': true,
+                    headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                    },
+                }
+            ).then((response) => {
+                console.log(response);
+            }).catch((error) => {
+                console.log(error);
+            });
         }).catch((error) => {
             console.log(error);
         });
 
-        // axios.patch('http://127.0.0.1:8000/api/imgs/' + img_id,
-        //     { "text": updated_alt_text },
-        //     { headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCookie('csrftoken')}, }
-        // ).then((response) => {
-        //     response.data.id;
-        // }).catch((error) => {
-        //     console.log(error);
-        // });
         
     }
 
     return (
-        <Button onClick={() => updateAltTextDatabase(1, userInput.current.value)}>
+        <Button onClick={() => updateAltTextDatabase(stateObj["imgIdToPKMap"][0][stateObj["radioValue"][0]], userInput.current.value)}>
             Submit
         </Button>
     );

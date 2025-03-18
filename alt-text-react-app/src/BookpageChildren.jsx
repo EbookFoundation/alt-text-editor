@@ -25,27 +25,28 @@ export function getCookie(name) {
 }
 
 
-export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, setNumSelected}) {
+export function BookpageChildren({stateObj, refObj}) {
 
     const [imgList, setImgList] = useState([]);
-    const [radioValue, setRadioValue] = useState('');
     const [iframeImgObj, setIframeImgObj] = useState({});
     const [alts, setAlts] = useState(null);
     const [loadedImgList, setLoadedImgList] = useState(false);
 
     const mappedImages = function (img_id, img_src, index) {
 
+            const iframe = refObj["iframe"];
+
             return (
                 <Col className='px-2 py-2' key={"list_" + img_id}>
                     <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
-                    checked={img_id === radioValue} onChange={(e) => setRadioValue(e.currentTarget.value)}
+                    checked={img_id === stateObj["radioValue"][0]} onChange={(e) => stateObj["radioValue"][1](e.currentTarget.value)}
                     onClick={(e) => {
                             iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
                             e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
-                            iframeRef.current.classList.remove("flash");
-                            setTimeout(function() {iframeRef.current.classList.add("flash")}, 100);
-                            altOnClick(alts[img_id]);
-                            setNumSelected(index + 1);
+                            iframe.current.classList.remove("flash");
+                            setTimeout(function() {iframe.current.classList.add("flash")}, 100);
+                            stateObj["altText"][1](alts[img_id]);
+                            stateObj["numSelected"][1](index + 1);
                         }}>
                         <img id={"list_" + img_id} src={img_src} /*alt={img.alt}*/ className="rounded"
                         style={{"maxWidth": "150px", "height": "auto"}} />
@@ -70,8 +71,14 @@ export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, se
         const altjson = await fetch("alt67098.json").then(response => response.json());
 
         const render = await Promise.all(img_api_obj_list);
+        render.sort((a, b) => a.id - b.id);
         setImgList(render);
-        setNumImgs(render.length);
+        stateObj["numImgs"][1](render.length);
+        let tempIdMap = {};
+        for(let i = 0; i < render.length; i++) {
+            tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id}
+        }
+        stateObj["imgIdToPKMap"][1]({...tempIdMap})
         setAlts(altjson);
         
     }
@@ -80,7 +87,7 @@ export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, se
     useEffect(() => {
         getURLs();
 
-        const iframe = iframeRef.current;
+        const iframe = refObj["iframe"].current;
 
         //get all images from iframe, then match them to images in list to add event listeners
         //possible error occurring if list of images from website is different from list of images pulled from api
@@ -102,9 +109,9 @@ export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, se
                         if(list_img !== null) {list_img.click();}
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            altOnClick("This image is not available for alt text editing at this time.");
-                            setNumSelected(0);
-                            setRadioValue("NO IMAGE");
+                            stateObj["altText"][1]("This image is not available for alt text editing at this time.");
+                            stateObj["numSelected"][1](0);
+                            stateObj["radioValue"][1]("NO IMAGE");
                         }
 
                     });
@@ -130,7 +137,7 @@ export function BookpageChildren({altOnClick, listRef, iframeRef, setNumImgs, se
             //move mapped images into new file again so render happens and scroll updates at same time?
             <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
                 <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
-                    <Row ref={listRef} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
+                    <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
                         {imgList.map((img, index) => mappedImages(img.img_id, img.image, index))}
                     </Row>
                 </Container>

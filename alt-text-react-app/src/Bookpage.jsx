@@ -2,12 +2,12 @@ import Accordion from 'react-bootstrap/Accordion';
 import { BookpageChildren}  from './BookpageChildren';
 
 
-export default function Bookpage({altOnClick, setNumImgs, listRef, iframeRef, setNumSelected}) {
+export default function Bookpage({stateObj, refObj}) {
     return(
     <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="1">
             <Accordion.Header>List of Images</Accordion.Header>
-            <BookpageChildren altOnClick={altOnClick} listRef={listRef} iframeRef={iframeRef} setNumImgs={setNumImgs} setNumSelected={setNumSelected}/>
+            <BookpageChildren stateObj={stateObj} refObj={refObj}/>
         </Accordion.Item>
       </Accordion>
     );
