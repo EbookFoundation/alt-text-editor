@@ -12,7 +12,17 @@ export default function SubmitButton({userInput, stateObj}) {
 
         //update pk of related alt, if successful, then update text in related alt
         //should be atomic? maybe different approach is needed
-        axios.patch('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
+        /*
+            - create new alt with text and source
+                - if alt text exists already in list, update the source and alt preferred id
+                    - get request on image alts [] and compare (radio button?)
+                - if new user text, add new alt obj to imgs alts [] (should also post to alt table)
+                    - update img alt id with new obj id
+                - return img obj for radio list
+
+
+        */
+        axios.patch('http://127.0.0.1:8000/api/imgs/' + pk.toString() + '/',
             { "alt": pk },
             {'withCredentials': true,
                 headers: {
