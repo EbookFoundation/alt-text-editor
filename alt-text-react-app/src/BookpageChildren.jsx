@@ -30,7 +30,6 @@ export function BookpageChildren({stateObj, refObj}) {
     const [imgList, setImgList] = useState([]);
     const [iframeImgObj, setIframeImgObj] = useState({});
     const [alts, setAlts] = useState(null);
-    const [loadedImgList, setLoadedImgList] = useState(false);
 
     const mappedImages = function (img_id, img_src, index) {
 
@@ -63,7 +62,7 @@ export function BookpageChildren({stateObj, refObj}) {
                 'X-CSRFToken': getCookie('csrftoken')
                 },
              }).then((response) => {
-                setLoadedImgList(true);
+                stateObj["loadedImgList"][1](true);
                 return response.data.imgs;
                 });
          
@@ -131,7 +130,7 @@ export function BookpageChildren({stateObj, refObj}) {
     }, []);
 
 
-    if(loadedImgList) {
+    if(stateObj["loadedImgList"][0]) {
         return (
 
             //move mapped images into new file again so render happens and scroll updates at same time?
