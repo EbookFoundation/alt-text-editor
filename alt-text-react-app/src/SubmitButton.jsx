@@ -1,6 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-import { getCookie } from './BookpageChildren';
+import { getCookie, updateAltsObj } from './helpers';
 
 
 
@@ -10,8 +10,6 @@ export default function SubmitButton({userInput, stateObj}) {
         if(updated_alt_text === null || updated_alt_text === "") {return;}
         if(stateObj["numSelected"][0] === 0) {return;}
 
-        //update pk of related alt, if successful, then update text in related alt
-        //should be atomic? maybe different approach is needed
         /*
             - create new alt with text and source
                 - if alt text exists already in list, update the source and alt preferred id
@@ -22,8 +20,10 @@ export default function SubmitButton({userInput, stateObj}) {
 
 
         */
-        axios.patch('http://127.0.0.1:8000/api/imgs/' + pk.toString() + '/',
-            { "alt": pk },
+        axios.post('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
+            { "img": pk,
+              "text": updated_alt_text  
+            },
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',
@@ -32,21 +32,9 @@ export default function SubmitButton({userInput, stateObj}) {
                 },
              }
         ).then((response) => {
-            console.log(response);
-            axios.patch('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
-                { "text": updated_alt_text },
-                {'withCredentials': true,
-                    headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                    },
-                }
-            ).then((response) => {
-                console.log(response);
-            }).catch((error) => {
-                console.log(error);
-            });
+            const current_alts_obj = stateObj["imgIdtoAltsMap"][0][stateObj["imgToggleValue"][0]];
+            updateAltsObj(response.data, current_alts_obj);
+            stateObj["imgIdtoAltsMap"][1]({...stateObj["imgIdtoAltsMap"][0], [stateObj["imgToggleValue"][0]]: {...current_alts_obj}});
         }).catch((error) => {
             console.log(error);
         });
@@ -55,7 +43,7 @@ export default function SubmitButton({userInput, stateObj}) {
     }
 
     return (
-        <Button onClick={() => updateAltTextDatabase(stateObj["imgIdToPKMap"][0][stateObj["radioValue"][0]], userInput.current.value)}>
+        <Button onClick={() => updateAltTextDatabase(stateObj["imgIdToPKMap"][0][stateObj["imgToggleValue"][0]], userInput.current.value)}>
             Submit
         </Button>
     );

@@ -4,87 +4,57 @@ import axios from 'axios';
 import Col from 'react-bootstrap/Col';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
+import { getCookie, createAltsObj } from './helpers';
 
 
 import { useState, useEffect } from 'react';
 
-//get csrf token for django auth with name == 'csrftoken'
-export function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
 
-
-export function BookpageChildren({stateObj, refObj}) {
+export default function BookpageChildren({stateObj, refObj}) {
 
     const [imgList, setImgList] = useState([]);
     const [iframeImgObj, setIframeImgObj] = useState({});
-    const [alts, setAlts] = useState(null);
+    // const [alts, setAlts] = useState(null);
 
-    const mappedImages = function (img_id, img_src, index) {
 
-            const iframe = refObj["iframe"];
-
-            return (
-                <Col className='px-2 py-2' key={"list_" + img_id}>
-                    <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
-                    checked={img_id === stateObj["radioValue"][0]} onChange={(e) => stateObj["radioValue"][1](e.currentTarget.value)}
-                    onClick={(e) => {
-                            iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
-                            e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
-                            iframe.current.classList.remove("flash");
-                            setTimeout(function() {iframe.current.classList.add("flash")}, 100);
-                            stateObj["altText"][1](alts[img_id]);
-                            stateObj["numSelected"][1](index + 1);
-                        }}>
-                        <img id={"list_" + img_id} src={img_src} /*alt={img.alt}*/ className="rounded"
-                        style={{"maxWidth": "150px", "height": "auto"}} />
-                    </ToggleButton>
-                </Col>
-            );
-    }
-
-    async function getURLs() {
+    //load images from urls, their related alt texts, and their primary keys from django database
+    async function getImagesAltsAndPKs() {
         const img_api_obj_list = await axios.get('http://127.0.0.1:8000/api/documents/1/',
             {'withCredentials': true,
                 headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
                 },
-             }).then((response) => {
+            }).then((response) => {
                 stateObj["loadedImgList"][1](true);
                 return response.data.imgs;
-                });
+            });
          
-        //currently pulling from local file instead of api
-        const altjson = await fetch("alt67098.json").then(response => response.json());
+        // if pulling from local file instead of api for alt texts:
+        // const altjson = await fetch("alt67098.json").then(response => response.json());
+        // setAlts(altjson);
 
+        //await img list for state
         const render = await Promise.all(img_api_obj_list);
         render.sort((a, b) => a.id - b.id);
         setImgList(render);
         stateObj["numImgs"][1](render.length);
+
+        //create maps
         let tempIdMap = {};
+        let tempAltMap = {};
         for(let i = 0; i < render.length; i++) {
             tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id}
+            tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts)}
         }
         stateObj["imgIdToPKMap"][1]({...tempIdMap})
-        setAlts(altjson);
-        
+        stateObj["imgIdtoAltsMap"][1]({...tempAltMap})
+
     }
 
     //api returns list of urls, not list of objs -> need to request each url which has high load time (1.5s)
     useEffect(() => {
-        getURLs();
+        getImagesAltsAndPKs();
 
         const iframe = refObj["iframe"].current;
 
@@ -101,16 +71,15 @@ export function BookpageChildren({stateObj, refObj}) {
                 let imgObj = {};
                 if(imgArr.length !== 0) {
                   for(const img of imgArr) {
-                    //console.log(img);
                     imgObj = {...imgObj, [img.id]: img};
                     img.addEventListener('click', () => {
                         const list_img = document.getElementById("list_" + img.id);
                         if(list_img !== null) {list_img.click();}
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            stateObj["altText"][1]("This image is not available for alt text editing at this time.");
+                            stateObj["AIText"][1]("This image is not available for alt text editing at this time.");
                             stateObj["numSelected"][1](0);
-                            stateObj["radioValue"][1]("NO IMAGE");
+                            stateObj["imgToggleValue"][1]("NO IMAGE");
                         }
 
                     });
@@ -129,11 +98,33 @@ export function BookpageChildren({stateObj, refObj}) {
         };
     }, []);
 
+    //map images pulled from database to toggle buttons containing img elements, render in accordion body
+    const mappedImages = function (img_id, img_src, index) {
+
+            const iframe = refObj["iframe"];
+
+            return (
+                <Col className='px-2 py-2' key={"list_" + img_id}>
+                    <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
+                    checked={img_id === stateObj["imgToggleValue"][0]} onChange={(e) => stateObj["imgToggleValue"][1](e.currentTarget.value)}
+                    onClick={(e) => {
+                            iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
+                            e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
+                            iframe.current.classList.remove("flash");
+                            setTimeout(function() {iframe.current.classList.add("flash")}, 100);
+                            stateObj["numSelected"][1](index + 1);
+                        }}>
+                        <img id={"list_" + img_id} src={img_src} className="rounded"
+                        style={{"maxWidth": "150px", "height": "auto"}} />
+                    </ToggleButton>
+                </Col>
+            );
+    }
+
 
     if(stateObj["loadedImgList"][0]) {
         return (
 
-            //move mapped images into new file again so render happens and scroll updates at same time?
             <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
                 <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
                     <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">

@@ -7,36 +7,38 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import 'bootstrap/dist/css/bootstrap.css';
 import Bookpage from './Bookpage';
 import NavbarDiv from './NavbarDiv';
 import SubmitButton from './SubmitButton'
+import AltTexts from './AltTexts';
 
-// TODO: updating primary keys to match image submissions, 
-// and have separate client save functionality for edits that are yet to be submitted
-
+// TODO: client save functionality for edits that are yet to be submitted
 
 function App() {
 
-  const [altText, setAltText] = useState('');
+  const [AIText, setAIText] = useState('ai suggestion');
   const [numSelected, setNumSelected] = useState(0);
   const [numImgs, setNumImgs] = useState(0);
   const [imgIdToPKMap, setImgIdToPKMap] = useState({});
-  const [radioValue, setRadioValue] = useState('');
+  const [imgToggleValue, setImgToggleValue] = useState('');
+  const [userSubRadioValue, setUserSubRadioValue] = useState('');
   const [loadedImgList, setLoadedImgList] = useState(false);
+  const [imgIdtoAltsMap, setImgIdtoAltsMap] = useState({});
 
   const iframe = useRef();
   const list_row = useRef();
   const user_input = useRef();
 
   const stateObj = {
-    "altText": [altText, setAltText],
+    "AIText": [AIText, setAIText],
     "numSelected": [numSelected, setNumSelected],
     "numImgs": [numImgs, setNumImgs],
     "imgIdToPKMap": [imgIdToPKMap, setImgIdToPKMap],
-    "radioValue": [radioValue, setRadioValue],
+    "imgToggleValue": [imgToggleValue, setImgToggleValue],
     "loadedImgList": [loadedImgList, setLoadedImgList],
+    "imgIdtoAltsMap": [imgIdtoAltsMap, setImgIdtoAltsMap],
+    "userSubRadioValue": [userSubRadioValue, setUserSubRadioValue]
   }
 
   const refObj = {
@@ -91,13 +93,9 @@ function App() {
         <Col>
           <Stack className='gap-3'>
             <Bookpage stateObj={stateObj} refObj={refObj}/>
+            <AltTexts stateObj={stateObj}/>
             <InputGroup>
-              <FloatingLabel label="Existing Alt Text">
-                <Form.Control id="altText" disabled as='textarea' style={{"height": "100px"}} value={altText}></Form.Control>
-              </FloatingLabel>
-            </InputGroup>
-            <InputGroup>
-              <Form.Control id="ai" placeholder="ai suggestion"></Form.Control>
+              <Form.Control id="ai" placeholder={AIText}></Form.Control>
             </InputGroup>
             <InputGroup>
               <Form.Control id="userInput" ref={refObj["user_input"]} placeholder="user input"></Form.Control>
