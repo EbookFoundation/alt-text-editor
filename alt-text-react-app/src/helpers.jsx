@@ -55,5 +55,4 @@ export function updateAltsObj(response_alt_obj, current_alts_obj) {
 
     //otherwise push old preferred onto options
     current_alts_obj.alts_arr.push(prev_preferred);
-
 }
