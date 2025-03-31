@@ -52,7 +52,6 @@ export default function BookpageChildren({stateObj, refObj}) {
 
     }
 
-    //api returns list of urls, not list of objs -> need to request each url which has high load time (1.5s)
     useEffect(() => {
         getImagesAltsAndPKs();
 
@@ -64,6 +63,7 @@ export default function BookpageChildren({stateObj, refObj}) {
 
         //Case: PG element references something outside of the book
             //Not available for alt text editing at this time
+            //temp solution for case that should not happen (database should match DOM)
         const handleIframeLoad = () => {
             try {
                 const images = iframe.contentDocument.body.querySelectorAll("img");
@@ -73,15 +73,15 @@ export default function BookpageChildren({stateObj, refObj}) {
                   for(const img of imgArr) {
                     imgObj = {...imgObj, [img.id]: img};
                     img.addEventListener('click', () => {
-                        const list_img = document.getElementById("list_" + img.id);
+                        const list_img = document.getElementById("list_" + img.id); //eventually we want to avoid using vanilla JS like this
                         if(list_img !== null) {list_img.click();}
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            stateObj["AIText"][1]("This image is not available for alt text editing at this time.");
+                            refObj["user_input"].current.disabled = true;
+                            refObj["user_input"].current.value = "This image is not available for alt text editing at this time.\n\n Your Previous Input: " + refObj["user_input"].current.value;
                             stateObj["numSelected"][1](0);
                             stateObj["imgToggleValue"][1]("NO IMAGE");
                         }
-
                     });
                   }
                   setIframeImgObj({...imgObj});
@@ -99,21 +99,29 @@ export default function BookpageChildren({stateObj, refObj}) {
     }, []);
 
     //map images pulled from database to toggle buttons containing img elements, render in accordion body
-    const mappedImages = function (img_id, img_src, index) {
+    const mappedImages = function (img_type, img_id, img_src, index) {
 
-            const iframe = refObj["iframe"];
-
+            const iframe = refObj["iframe"];    
+    
             return (
                 <Col className='px-2 py-2' key={"list_" + img_id}>
                     <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
                     checked={img_id === stateObj["imgToggleValue"][0]} onChange={(e) => stateObj["imgToggleValue"][1](e.currentTarget.value)}
                     onClick={(e) => {
-                            iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
-                            e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
-                            iframe.current.classList.remove("flash");
-                            setTimeout(function() {iframe.current.classList.add("flash")}, 100);
+                        iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
+                        e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
+                        iframe.current.classList.remove("flash");
+                        setTimeout(function() {iframe.current.classList.add("flash")}, 100);
+                        if(img_type === 1) {
+                            refObj["user_input"].current.disabled = true;
+                            refObj["user_input"].current.value = "This image is not available for alt text editing at this time.\n\n Your Previous Input: " + refObj["user_input"].current.value;
+                            stateObj["numSelected"][1](0);
+                        }
+                        else {
+                            refObj["user_input"].current.disabled = false;
                             stateObj["numSelected"][1](index + 1);
-                        }}>
+                        }
+                    }}>
                         <img id={"list_" + img_id} src={img_src} className="rounded"
                         style={{"maxWidth": "150px", "height": "auto"}} />
                     </ToggleButton>
@@ -128,7 +136,7 @@ export default function BookpageChildren({stateObj, refObj}) {
             <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
                 <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
                     <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
-                        {imgList.map((img, index) => mappedImages(img.img_id, img.image, index))}
+                        {imgList.map((img, index) => mappedImages(img.img_type, img.img_id, img.image, index))}
                     </Row>
                 </Container>
             </Accordion.Body>
