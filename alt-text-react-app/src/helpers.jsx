@@ -38,7 +38,7 @@ export function createAltsObj(img_key, alt_key, alts_arr) {
 export function updateAltsObj(response_alt_obj, current_alts_obj) {
     const prev_preferred = current_alts_obj.preferred_alt_text;
     const prev_alt_key =  current_alts_obj.alt_key;
-    current_alts_obj.preferred_alt_text = {...response_alt_obj};
+    current_alts_obj.preferred_alt_text = response_alt_obj;
     current_alts_obj.alt_key = response_alt_obj.id;
 
     //if first obj or response is updated prev preferred text

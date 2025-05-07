@@ -1,28 +1,26 @@
 import Button from 'react-bootstrap/Button';
+
 import axios from 'axios';
 import { getCookie, updateAltsObj } from './helpers';
 
 
 
-export default function SubmitButton({userInput, stateObj}) {
+export default function SubmitButton({stateObj}) {
 
-    async function updateAltTextDatabase(pk, updated_alt_text) {
-        if(updated_alt_text === null || updated_alt_text === "") {return;}
-        if(stateObj["numSelected"][0] === 0) {return;}
+    async function updateAltTextDatabase(stored_user_input, edit_check, num_selected, map, set_map) {
+        if(edit_check) {return;}
+        if(num_selected === 0) {return;}
+        if(Object.keys(stored_user_input).length === 0) {return;}
 
         /*
-            - create new alt with text and source
-                - if alt text exists already in list, update the source and alt preferred id
-                    - get request on image alts [] and compare (radio button?)
-                - if new user text, add new alt obj to imgs alts [] (should also post to alt table)
-                    - update img alt id with new obj id
-                - return img obj for radio list
-
-
+            - user input automatically posts on submission_type: "SB" 
+            - returns list of alts_created in obj
         */
-        axios.post('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
-            { "img": pk,
-              "text": updated_alt_text  
+        axios.post('http://127.0.0.1:8000/api/user_submissions/',
+            { 
+              "user_json": stored_user_input,
+              "submission_type": "SB",
+              "document": 1 // hard coded for document for now, switch to pk based on booknum state when multiple books supported
             },
             {'withCredentials': true,
                 headers: {
@@ -32,9 +30,18 @@ export default function SubmitButton({userInput, stateObj}) {
                 },
              }
         ).then((response) => {
-            const current_alts_obj = stateObj["imgIdtoAltsMap"][0][stateObj["imgToggleValue"][0]];
-            updateAltsObj(response.data, current_alts_obj);
-            stateObj["imgIdtoAltsMap"][1]({...stateObj["imgIdtoAltsMap"][0], [stateObj["imgToggleValue"][0]]: {...current_alts_obj}});
+            for (const alt_created of response.data.alts_created) {
+                var current_alts_obj = null;
+                for (const [key, value] of Object.entries(map)) {
+                    if(value.img_key === alt_created.img) {
+                        current_alts_obj = map[key];
+                        break;
+                    }
+                }
+                if(current_alts_obj === null) {return;}
+                updateAltsObj(alt_created, current_alts_obj);
+                set_map({...map, [alt_created.img_id]: {...current_alts_obj}});
+            }
         }).catch((error) => {
             console.log(error);
         });
@@ -43,7 +50,9 @@ export default function SubmitButton({userInput, stateObj}) {
     }
 
     return (
-        <Button onClick={() => updateAltTextDatabase(stateObj["imgIdToPKMap"][0][stateObj["imgToggleValue"][0]], userInput.current.value)}>
+        <Button onClick={() => updateAltTextDatabase(stateObj["storedUserInput"][0], stateObj["noEditImg"][0],
+                                                     stateObj["numSelected"][0], stateObj["imgIdtoAltsMap"][0], 
+                                                     stateObj["imgIdtoAltsMap"][1])}>
             Submit
         </Button>
     );

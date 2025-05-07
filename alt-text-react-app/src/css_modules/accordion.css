@@ -1,0 +1,6 @@
+.accordion_align {
+    text-align: center;
+    scrollbar-color: #00000080 rgba(255, 255, 255, 0.87);
+    max-height: 40vh;
+    overflow: scroll;
+}

@@ -1,13 +1,15 @@
 import Accordion from 'react-bootstrap/Accordion';
 import Container from 'react-bootstrap/Container';
-import axios from 'axios';
 import Col from 'react-bootstrap/Col';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
+
+import axios from 'axios';
 import { getCookie, createAltsObj } from './helpers';
-
-
 import { useState, useEffect } from 'react';
+
+import './css_modules/accordion.css';
+
 
 
 export default function BookpageChildren({stateObj, refObj}) {
@@ -77,10 +79,7 @@ export default function BookpageChildren({stateObj, refObj}) {
                         if(list_img !== null) {list_img.click();}
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            refObj["user_input"].current.disabled = true;
-                            refObj["user_input"].current.value = "This image is not available for alt text editing at this time.\n\n Your Previous Input: " + refObj["user_input"].current.value;
-                            stateObj["numSelected"][1](0);
-                            stateObj["imgToggleValue"][1]("NO IMAGE");
+                            stateObj["noEditImg"][1](true);
                         }
                     });
                   }
@@ -99,7 +98,7 @@ export default function BookpageChildren({stateObj, refObj}) {
     }, []);
 
     //map images pulled from database to toggle buttons containing img elements, render in accordion body
-    const mappedImages = function (img_type, img_id, img_src, index) {
+    const mappedImages = function (img_type, img_id, img_details, index) {
 
             const iframe = refObj["iframe"];    
     
@@ -112,17 +111,18 @@ export default function BookpageChildren({stateObj, refObj}) {
                         e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
                         iframe.current.classList.remove("flash");
                         setTimeout(function() {iframe.current.classList.add("flash")}, 100);
+                        stateObj["numSelected"][1](index + 1);
                         if(img_type === 1) {
-                            refObj["user_input"].current.disabled = true;
-                            refObj["user_input"].current.value = "This image is not available for alt text editing at this time.\n\n Your Previous Input: " + refObj["user_input"].current.value;
-                            stateObj["numSelected"][1](0);
+                            stateObj["noEditImg"][1](true);
+                        }
+                        else if(img_details.x !== null && img_details.x < 100 && img_details.y !== null && img_details.y < 100) {
+                            stateObj["noEditImg"][1](true);
                         }
                         else {
-                            refObj["user_input"].current.disabled = false;
-                            stateObj["numSelected"][1](index + 1);
+                            stateObj["noEditImg"][1](false);
                         }
                     }}>
-                        <img id={"list_" + img_id} src={img_src} className="rounded"
+                        <img id={"list_" + img_id} src={img_details.url} className="rounded"
                         style={{"maxWidth": "150px", "height": "auto"}} />
                     </ToggleButton>
                 </Col>
@@ -133,8 +133,8 @@ export default function BookpageChildren({stateObj, refObj}) {
     if(stateObj["loadedImgList"][0]) {
         return (
 
-            <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
-                <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
+            <Accordion.Body className="accordion_align">
+                <Container>
                     <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
                         {imgList.map((img, index) => mappedImages(img.img_type, img.img_id, img.image, index))}
                     </Row>
@@ -145,7 +145,7 @@ export default function BookpageChildren({stateObj, refObj}) {
 
     //placeholders for api load wait
     return (
-        <Accordion.Body className="overflow-scroll" style={{"textAlign": "center", "scrollbarColor": "#00000080 rgba(255, 255, 255, 0.87)", "maxHeight": "40vh"}}>
+        <Accordion.Body className='accordion_align'>
                 <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
                     <Row className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}}>
                         {
