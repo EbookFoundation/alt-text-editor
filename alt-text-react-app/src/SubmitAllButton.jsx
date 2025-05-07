@@ -5,7 +5,7 @@ import { getCookie, updateAltsObj } from './helpers';
 
 
 
-export default function SubmitButton({stateObj}) {
+export default function SubmitAllButton({stateObj}) {
 
     async function updateAltTextDatabase(stored_user_input, edit_check, num_selected, map, set_map) {
         if(edit_check) {return;}
@@ -53,7 +53,7 @@ export default function SubmitButton({stateObj}) {
         <Button onClick={() => updateAltTextDatabase(stateObj["storedUserInput"][0], stateObj["noEditImg"][0],
                                                      stateObj["numSelected"][0], stateObj["imgIdtoAltsMap"][0], 
                                                      stateObj["imgIdtoAltsMap"][1])}>
-            Submit
+            Submit All In Progress
         </Button>
     );
 

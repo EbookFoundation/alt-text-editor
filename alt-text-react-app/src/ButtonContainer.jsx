@@ -3,8 +3,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-import SubmitButton from './SubmitButton'
-import UpdateButton from "./UpdateButton";
+import SubmitAllButton from './SubmitAllButton';
+import SubmitOneButton from './SubmitOneButton';
 
 import axios from "axios";
 import { getCookie } from "./helpers";
@@ -108,20 +108,20 @@ export default function ButtonContainer({stateObj, refObj}) {
             <Container className="px-0">
                 <Row>
                     <Col className="d-grid">
-                        <Button onClick={saveLocalStorage}>Save</Button>
+                        <Button onClick={saveLocalStorage}>Save All In Progress</Button>
                     </Col>
                     <Col className="d-grid">
-                        <SubmitButton userInput={refObj["user_input"]} stateObj={stateObj}/>
+                        <SubmitAllButton stateObj={stateObj}/>
                     </Col>
                 </Row>
             </Container>
             <Container className="px-0">
                 <Row>
                     <Col className="d-grid">
-                        <UpdateButton stateObj={stateObj}/>
+                        <SubmitOneButton userInput={refObj["user_input"]} stateObj={stateObj}/>
                     </Col>
                     <Col className="d-grid">
-                        <Button onClick={deleteLocalStorage}>Delete</Button>
+                        <Button onClick={deleteLocalStorage}>Delete All In Progress</Button>
                     </Col>
                 </Row>
             </Container>

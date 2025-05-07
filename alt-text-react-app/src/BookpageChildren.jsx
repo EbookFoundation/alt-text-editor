@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
+import Form from 'react-bootstrap/Form';
 
 import axios from 'axios';
 import { getCookie, createAltsObj } from './helpers';
@@ -16,7 +17,7 @@ export default function BookpageChildren({stateObj, refObj}) {
 
     const [imgList, setImgList] = useState([]);
     const [iframeImgObj, setIframeImgObj] = useState({});
-    // const [alts, setAlts] = useState(null);
+    const [filterImgRadioValue, setFilterImgRadioValue] = useState("all");
 
 
     //load images from urls, their related alt texts, and their primary keys from django database
@@ -129,14 +130,62 @@ export default function BookpageChildren({stateObj, refObj}) {
             );
     }
 
+    function filterEdited(id, stored_user_input, bool) {
+        if(stored_user_input !== undefined && id in stored_user_input) {
+            return bool;
+        }
+        return !bool;
+    }
+
 
     if(stateObj["loadedImgList"][0]) {
+
+        const edited = filterImgRadioValue === "edited" ? true : false;
+        const filter_func = filterImgRadioValue === "all" ? () => true : (id, stored_user_input) => filterEdited(id, stored_user_input, edited)
+
         return (
 
             <Accordion.Body className="accordion_align">
                 <Container>
+                    <Row>
+                        <Col>
+                            <Form>
+                                <Form.Check
+                                    inline
+                                    type="radio"
+                                    id="all_imgs"
+                                    name="filter"
+                                    label="All"
+                                    value="all"
+                                    checked={filterImgRadioValue === "all"}
+                                    onChange={(e) => setFilterImgRadioValue(e.target.value)}
+                                />
+                                <Form.Check
+                                    inline
+                                    type="radio"
+                                    label="In Progress"
+                                    id="edited_imgs"
+                                    name="filter"
+                                    value="edited"
+                                    checked={filterImgRadioValue === "edited"}
+                                    onChange={(e) => setFilterImgRadioValue(e.target.value)}
+                                />
+                                <Form.Check
+                                    inline
+                                    type="radio"
+                                    label="Unedited"
+                                    id="unedited_imgs"
+                                    name="filter"
+                                    value="unedited"
+                                    checked={filterImgRadioValue === "unedited"}
+                                    onChange={(e) => setFilterImgRadioValue(e.target.value)}
+                                />
+                            </Form>
+                        </Col>
+                    </Row>
                     <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
-                        {imgList.map((img, index) => mappedImages(img.img_type, img.img_id, img.image, index))}
+                        {imgList.filter((img) => filter_func(img.img_id, stateObj["storedUserInput"][0]))
+                        .map((img, index) => mappedImages(img.img_type, img.img_id, img.image, index))}
                     </Row>
                 </Container>
             </Accordion.Body>
