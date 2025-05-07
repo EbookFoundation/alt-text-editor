@@ -2,10 +2,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
-import ButtonContainer from './ButtonContainer';
-
 import './css_modules/alt.css'
-import { useState } from 'react';
 
 
 
@@ -13,6 +10,8 @@ export default function UserInput({stateObj}) {
 
     const strUsr = stateObj["storedUserInput"][0];
     const setStrUsr = stateObj["storedUserInput"][1];
+
+    const label = "Add / Edit Alt Text";
 
 
     function updateUserInputState(e) {
@@ -37,7 +36,7 @@ export default function UserInput({stateObj}) {
     if(stateObj["numSelected"][0] === 0) {
         return (
             <InputGroup>
-                <FloatingLabel label={"New Alt Text"} controlId='userAltTextDisabled'>
+                <FloatingLabel label={label} controlId='userAltTextDisabled'>
                     <Form.Control disabled as='textarea' style={{"height": "100px"}}
                     value="Please select an image to begin alt text editing."/>
                 </FloatingLabel>
@@ -48,7 +47,7 @@ export default function UserInput({stateObj}) {
     if(stateObj["noEditImg"][0]) {
         return (
             <InputGroup>
-                <FloatingLabel label={"New Alt Text"} controlId='userAltTextDisabled'>
+                <FloatingLabel label={label} controlId='userAltTextDisabled'>
                     <Form.Control disabled as='textarea' style={{"height": "100px"}}
                     value="This image is not available for alt text editing at this time."/>
                 </FloatingLabel>
@@ -59,7 +58,7 @@ export default function UserInput({stateObj}) {
     //normal img
     return (
         <InputGroup>
-            <FloatingLabel label={"New Alt Text"} controlId={'userAltText_' + stateObj["imgToggleValue"][0]}>
+            <FloatingLabel label={label} controlId={'userAltText_' + stateObj["imgToggleValue"][0]}>
                 <Form.Control as='textarea' style={{"height": "100px"}} 
                 onChange={(e) => updateUserInputState(e)} value={getUserInput()}/>
             </FloatingLabel>
