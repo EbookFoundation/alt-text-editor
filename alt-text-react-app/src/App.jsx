@@ -58,6 +58,8 @@ function App() {
     "list_row": list_row
   }
 
+  const iframe_url = import.meta.env.PROD ? 'https://dev.gutenberg.org/cache/epub/67098/pg67098-images.html' : '/iframe';
+
   //proxy server for all pg books (just mirror content at diff url)
     //not rewriting, just mirroring
     //eric shares cloud server for proxying
@@ -113,7 +115,8 @@ function App() {
         <Col>
           <Stack className='gap-3'>
             <IframeNav stateObj={stateObj} refObj={refObj}/>
-            <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} className="border border-secondary border-4" src="/iframe"></iframe>
+            <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} 
+            className="border border-secondary border-4" src={iframe_url}/>
           </Stack>
         </Col>
         <Col>
