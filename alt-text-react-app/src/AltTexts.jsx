@@ -120,7 +120,7 @@ export default function AltTexts({stateObj}) {
     }
 
     function patchSubmittedText(alt_id, text) {
-        axios.patch('http://127.0.0.1:8000/api/alts/' + alt_id + "/",
+        axios.patch(import.meta.env.DATABASE_URL + '/api/alts/' + alt_id + "/",
         {
             "text": text
         },

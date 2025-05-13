@@ -21,7 +21,7 @@ export default function SubmitOneButton({stateObj}) {
                     - update img alt id with new obj id
                 - return img obj for radio list
         */
-        axios.post('http://127.0.0.1:8000/api/alts/' + pk.toString() + '/',
+        axios.post(import.meta.env.DATABASE_URL + '/api/alts/' + pk.toString() + '/',
             { "img": pk,
               "text": updated_alt_text  
             },

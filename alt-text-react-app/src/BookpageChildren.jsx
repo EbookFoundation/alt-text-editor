@@ -22,7 +22,7 @@ export default function BookpageChildren({stateObj, refObj}) {
 
     //load images from urls, their related alt texts, and their primary keys from django database
     async function getImagesAltsAndPKs() {
-        const img_api_obj_list = await axios.get('http://127.0.0.1:8000/api/documents/1/',
+        const img_api_obj_list = await axios.get(import.meta.env.DATABASE_URL + '/api/documents/1/',
             {'withCredentials': true,
                 headers: {
                 'Content-Type': 'application/json',

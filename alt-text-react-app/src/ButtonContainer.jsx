@@ -45,7 +45,7 @@ export default function ButtonContainer({stateObj, refObj}) {
     }
 
     function postLocalStorage() {
-        axios.post('http://127.0.0.1:8000/api/user_submissions/',
+        axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
             { "document": 1, //TODO: change to booknum here and in django models
               "user_json": stateObj["storedUserInput"][0],
               "submission_type": "SV"
@@ -66,7 +66,7 @@ export default function ButtonContainer({stateObj, refObj}) {
     }
 
     function patchLocalStorage() {
-        axios.patch('http://127.0.0.1:8000/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
+        axios.patch(import.meta.env.DATABASE_URL + '/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
             {
               "user_json": stateObj["storedUserInput"][0],
               "submission_type": "SV"
@@ -89,7 +89,7 @@ export default function ButtonContainer({stateObj, refObj}) {
         localStorage.removeItem(stateObj["bookNum"][0]);
         stateObj["storedUserInput"][1]({});
         if(stateObj["userInputPK"][0] === null) {return;}
-        axios.delete('http://127.0.0.1:8000/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
+        axios.delete(import.meta.env.DATABASE_URL + '/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',

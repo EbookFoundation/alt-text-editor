@@ -16,7 +16,7 @@ export default function SubmitAllButton({stateObj}) {
             - user input automatically posts on submission_type: "SB" 
             - returns list of alts_created in obj
         */
-        axios.post('http://127.0.0.1:8000/api/user_submissions/',
+        axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
             { 
               "user_json": stored_user_input,
               "submission_type": "SB",

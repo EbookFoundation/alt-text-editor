@@ -78,7 +78,7 @@ function App() {
   useEffect(() => {
 
     //get old user input if already started editing
-    axios.get('http://127.0.0.1:8000/api/user_submissions/?username=' + username +'&document=1',
+    axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + username +'&document=1',
       {'withCredentials': true,
           headers: {
           'Accept': 'application/json',
