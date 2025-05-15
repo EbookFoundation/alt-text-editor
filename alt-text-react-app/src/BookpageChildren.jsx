@@ -47,54 +47,62 @@ export default function BookpageChildren({stateObj, refObj}) {
         let tempIdMap = {};
         let tempAltMap = {};
         for(let i = 0; i < render.length; i++) {
-            tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id}
-            tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts)}
+            tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id};
+            tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts)};
         }
-        stateObj["imgIdToPKMap"][1]({...tempIdMap})
-        stateObj["imgIdtoAltsMap"][1]({...tempAltMap})
+        stateObj["imgIdToPKMap"][1]({...tempIdMap});
+        stateObj["imgIdtoAltsMap"][1]({...tempAltMap});
 
     }
 
-    useEffect(() => {
-        getImagesAltsAndPKs();
-
-        const iframe = refObj["iframe"].current;
-
-        //get all images from iframe, then match them to images in list to add event listeners
+    //get all images from iframe, then match them to images in list to add event listeners
         //possible error occurring if list of images from website is different from list of images pulled from api
         //right now it just lets the user know there's a mismatch and deselects
 
-        //Case: PG element references something outside of the book
-            //Not available for alt text editing at this time
-            //temp solution for case that should not happen (database should match DOM)
-        const handleIframeLoad = () => {
-            try {
-                const images = iframe.contentDocument.body.querySelectorAll("img");
-                const imgArr = Array.from(images);
-                let imgObj = {};
-                if(imgArr.length !== 0) {
-                  for(const img of imgArr) {
+    //Case: PG element references something outside of the book
+        //Not available for alt text editing at this time
+        //temp solution for case that should not happen (database should match DOM)
+    const handleIframeLoad = (e) => {
+        try {
+            const images = e.currentTarget.contentDocument.body.querySelectorAll("img");
+            const imgArr = Array.from(images);
+            let imgObj = {};
+            if(imgArr.length !== 0) {
+                for(const img of imgArr) {
                     imgObj = {...imgObj, [img.id]: img};
                     img.addEventListener('click', () => {
-                        const list_img = document.getElementById("list_" + img.id); //eventually we want to avoid using vanilla JS like this
-                        if(list_img !== null) {list_img.click();}
+                        setFilterImgRadioValue('all');
+                        //possible to avoid using DOM manipulation / vanilla JS like this?
+                        //probably better if not, but we need querySelector to get <img> anyway
+                        const list_img = document.getElementById("list_" + img.id); 
+                        if(list_img !== null && list_img !== undefined) {
+                            list_img.click(); 
+                        }
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
                             stateObj["noEditImg"][1](true);
                         }
                     });
-                  }
-                  setIframeImgObj({...imgObj});
                 }
-            } catch (error) {
-                console.error("Error accessing iframe content:", error);
+                setIframeImgObj({...imgObj});
             }
-        };
+        } catch (error) {
+            console.error("Error accessing iframe content:", error);
+        }
+    };
+    
 
-        iframe.addEventListener("load", handleIframeLoad);
+    useEffect(() => {
+        getImagesAltsAndPKs();
+    }, []);
+
+    useEffect(() => {
+        const iframe = refObj["iframe"].current;
+
+        iframe.addEventListener("load", (e) => handleIframeLoad(e));
 
         return () => {
-            iframe.removeEventListener("load", handleIframeLoad);
+            iframe.removeEventListener("load", (e) => handleIframeLoad(e));
         };
     }, []);
 
