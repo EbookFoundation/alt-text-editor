@@ -3,37 +3,37 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
 import './css_modules/alt.css'
+import React from 'react';
 
 
 
-export default function UserInput({stateObj}) {
 
-    const strUsr = stateObj["storedUserInput"][0];
-    const setStrUsr = stateObj["storedUserInput"][1];
+export default function UserInput({storedUserInput, setStoredUserInput, imgToggleValue, numSelected, noEditImg}) {
+
 
     const label = "Add / Edit Alt Text";
 
 
     function updateUserInputState(e) {
-        if(stateObj["numSelected"][0] === 0) {return;}
+        if(numSelected === 0) {return;}
         if(e.currentTarget.value === "") {
-            const newStrUsr = {...strUsr};
-            delete newStrUsr[[stateObj["imgToggleValue"][0]]]; // or whichever key you want
-            setStrUsr(newStrUsr);
+            const newStrUsr = {...storedUserInput};
+            delete newStrUsr[imgToggleValue];
+            setStoredUserInput(newStrUsr);
             return;
         }
         
-        setStrUsr({...strUsr, [stateObj["imgToggleValue"][0]]: e.currentTarget.value});
+        setStoredUserInput({...storedUserInput, [imgToggleValue]: e.currentTarget.value});
     }
 
     function getUserInput() {
-        if(strUsr[stateObj["imgToggleValue"][0]] == null || strUsr[stateObj["imgToggleValue"][0]] === "") {
+        if(storedUserInput[imgToggleValue] == null || storedUserInput[imgToggleValue] === "") {
             return "";
         }
-        return strUsr[stateObj["imgToggleValue"][0]];
+        return storedUserInput[imgToggleValue];
     }
 
-    if(stateObj["numSelected"][0] === 0) {
+    if(numSelected === 0) {
         return (
             <InputGroup>
                 <FloatingLabel label={label} controlId='userAltTextDisabled'>
@@ -44,7 +44,7 @@ export default function UserInput({stateObj}) {
         );
     }
 
-    if(stateObj["noEditImg"][0]) {
+    if(noEditImg) {
         return (
             <InputGroup>
                 <FloatingLabel label={label} controlId='userAltTextDisabled'>
@@ -58,7 +58,7 @@ export default function UserInput({stateObj}) {
     //normal img
     return (
         <InputGroup>
-            <FloatingLabel label={label} controlId={'userAltText_' + stateObj["imgToggleValue"][0]}>
+            <FloatingLabel label={label} controlId={'userAltText_' + imgToggleValue}>
                 <Form.Control as='textarea' style={{"height": "100px"}} 
                 onChange={(e) => updateUserInputState(e)} value={getUserInput()}/>
             </FloatingLabel>

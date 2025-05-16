@@ -1,3 +1,5 @@
+import React from 'react';
+import { useState, useRef, useEffect, createContext, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import Stack from 'react-bootstrap/Stack';
@@ -12,10 +14,10 @@ import ButtonContainer from './ButtonContainer';
 import IframeNav from './IframeNav';
 
 import axios from 'axios';
-import { useState, useRef, useEffect } from 'react';
 import { getCookie } from './helpers';
-
 import './css_modules/App.css';
+
+export const UserContext = createContext("");
 
 
 function App() {
@@ -35,28 +37,8 @@ function App() {
   const [bookNum, setBookNum] = useState('67098');
   const [userInputPK, setUserInputPK] = useState(null);
 
-  const iframe = useRef();
-  const list_row = useRef();
-
-  const stateObj = {
-    "numSelected": [numSelected, setNumSelected],
-    "numImgs": [numImgs, setNumImgs],
-    "imgIdToPKMap": [imgIdToPKMap, setImgIdToPKMap],
-    "imgToggleValue": [imgToggleValue, setImgToggleValue],
-    "loadedImgList": [loadedImgList, setLoadedImgList],
-    "imgIdtoAltsMap": [imgIdtoAltsMap, setImgIdtoAltsMap],
-    "userSubRadioValue": [userSubRadioValue, setUserSubRadioValue],
-    "noEditImg": [noEditImg, setNoEditImg],
-    "storedUserInput": [storedUserInput, setStoredUserInput],
-    "bookNum": [bookNum, setBookNum],
-    "username": [username, setUsername],
-    "userInputPK": [userInputPK, setUserInputPK]
-  }
-
-  const refObj = {
-    "iframe": iframe,
-    "list_row": list_row
-  }
+  const iframe = useRef(null);
+  const list_row = useRef(null);
 
   const iframe_url = import.meta.env.PROD ? 'https://dev.gutenberg.org/cache/epub/67098/pg67098-images.html' : '/iframe';
 
@@ -91,7 +73,7 @@ function App() {
       ).then((response) => {
         if(response.status === 200) {
           //backup to database, store in local storage.
-          localStorage.setItem(stateObj["bookNum"][0], JSON.stringify(response.data.user_json));
+          localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
           setStoredUserInput(response.data.user_json);
           setUserInputPK(response.data.id);
         }
@@ -108,28 +90,34 @@ function App() {
   
 
   return (
-    <>
-    <NavbarDiv/>
-    <Container fluid className='px-4 py-2'>
-      <Row align="end">
-        <Col>
-          <Stack className='gap-3'>
-            <IframeNav stateObj={stateObj} refObj={refObj}/>
-            <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} 
-            className="border border-secondary border-4" src={iframe_url}/>
-          </Stack>
-        </Col>
-        <Col>
-          <Stack className='gap-3'>
-            <Bookpage stateObj={stateObj} refObj={refObj}/>
-            <AltTexts stateObj={stateObj}/>
-            <ButtonContainer stateObj={stateObj} refObj={refObj}/>
-          </Stack>
-        </Col>
-      </Row>
-    </Container>
-    </>
+    <UserContext.Provider value={username}>
+      <NavbarDiv/>
+      <Container fluid className='px-4 py-2'>
+        <Row align="end">
+          <Col>
+            <Stack className='gap-3'>
+              <IframeNav numSelected={numSelected} numImgs={numImgs} loadedImgList={loadedImgList} list_row_ref={list_row}/>
+              <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} 
+              className="border border-secondary border-4" src={iframe_url}/>
+            </Stack>
+          </Col>
+          <Col>
+            <Stack className='gap-3'>
+              <Bookpage bookNum={bookNum} setImgIdtoAltsMap={setImgIdtoAltsMap} setImgIdtoPKMap={setImgIdToPKMap}
+                setImgToggleValue={setImgToggleValue} imgToggleValue={imgToggleValue} setLoadedImgList={setLoadedImgList}
+                loadedImgList={loadedImgList} setNoEditImg={setNoEditImg} setNumImgs={setNumImgs} setNumSelected={setNumSelected}
+                storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row}/>
+              <AltTexts imgIdtoAltsMap={imgIdtoAltsMap} imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+                setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
+              <ButtonContainer storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap}
+                imgIdtoAltsMap={imgIdtoAltsMap} imgIdToPKMap={imgIdToPKMap} imgToggleValue={imgToggleValue} bookNum={bookNum} 
+                setUserInputPK={setUserInputPK} userInputPK={userInputPK} numSelected={numSelected} noEditImg={noEditImg}/>
+            </Stack>
+          </Col>
+        </Row>
+      </Container>
+    </UserContext.Provider>
   );
 }
 
-export default App
+export default App;

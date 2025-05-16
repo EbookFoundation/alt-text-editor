@@ -5,6 +5,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 
+import React from 'react';
 import axios from 'axios';
 import { getCookie, createAltsObj } from './helpers';
 import { useState, useEffect } from 'react';
@@ -13,7 +14,8 @@ import './css_modules/accordion.css';
 
 
 
-export default function BookpageChildren({stateObj, refObj}) {
+export default function BookpageChildren({loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap, 
+    setImgIdtoAltsMap, setNoEditImg, setNumSelected, storedUserInput, imgToggleValue, setImgToggleValue, iframe_ref, list_row_ref}) {
 
     const [imgList, setImgList] = useState([]);
     const [iframeImgObj, setIframeImgObj] = useState({});
@@ -29,7 +31,7 @@ export default function BookpageChildren({stateObj, refObj}) {
                 'X-CSRFToken': getCookie('csrftoken')
                 },
             }).then((response) => {
-                stateObj["loadedImgList"][1](true);
+                setLoadedImgList(true);
                 return response.data.imgs;
             });
          
@@ -41,7 +43,7 @@ export default function BookpageChildren({stateObj, refObj}) {
         const render = await Promise.all(img_api_obj_list);
         render.sort((a, b) => a.id - b.id);
         setImgList(render);
-        stateObj["numImgs"][1](render.length);
+        setNumImgs(render.length);
 
         //create maps
         let tempIdMap = {};
@@ -50,8 +52,8 @@ export default function BookpageChildren({stateObj, refObj}) {
             tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id};
             tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts)};
         }
-        stateObj["imgIdToPKMap"][1]({...tempIdMap});
-        stateObj["imgIdtoAltsMap"][1]({...tempAltMap});
+        setImgIdtoPKMap({...tempIdMap});
+        setImgIdtoAltsMap({...tempAltMap});
 
     }
 
@@ -80,7 +82,7 @@ export default function BookpageChildren({stateObj, refObj}) {
                         }
                         else {
                             img.scrollIntoView({behavior: "smooth", block: "center"});
-                            stateObj["noEditImg"][1](true);
+                            setNoEditImg(true);
                         }
                     });
                 }
@@ -97,7 +99,7 @@ export default function BookpageChildren({stateObj, refObj}) {
     }, []);
 
     useEffect(() => {
-        const iframe = refObj["iframe"].current;
+        const iframe = iframe_ref.current;
 
         iframe.addEventListener("load", (e) => handleIframeLoad(e));
 
@@ -109,26 +111,26 @@ export default function BookpageChildren({stateObj, refObj}) {
     //map images pulled from database to toggle buttons containing img elements, render in accordion body
     const mappedImages = function (img_type, img_id, img_details, index) {
 
-            const iframe = refObj["iframe"];    
+            const iframe = iframe_ref.current;    
     
             return (
                 <Col className='px-2 py-2' key={"list_" + img_id}>
                     <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
-                    checked={img_id === stateObj["imgToggleValue"][0]} onChange={(e) => stateObj["imgToggleValue"][1](e.currentTarget.value)}
+                    checked={img_id === imgToggleValue} onChange={(e) => setImgToggleValue(e.currentTarget.value)}
                     onClick={(e) => {
                         iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
                         e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
-                        iframe.current.classList.remove("flash");
-                        setTimeout(function() {iframe.current.classList.add("flash")}, 100);
-                        stateObj["numSelected"][1](index + 1);
+                        iframe.classList.remove("flash");
+                        setTimeout(function() {iframe.classList.add("flash")}, 100);
+                        setNumSelected(index + 1);
                         if(img_type === 1) {
-                            stateObj["noEditImg"][1](true);
+                            setNoEditImg(true);
                         }
                         else if(img_details.x !== null && img_details.x < 100 && img_details.y !== null && img_details.y < 100) {
-                            stateObj["noEditImg"][1](true);
+                            setNoEditImg(true);
                         }
                         else {
-                            stateObj["noEditImg"][1](false);
+                            setNoEditImg(false);
                         }
                     }}>
                         <img id={"list_" + img_id} src={img_details.url} className="rounded"
@@ -146,7 +148,7 @@ export default function BookpageChildren({stateObj, refObj}) {
     }
 
 
-    if(stateObj["loadedImgList"][0]) {
+    if(loadedImgList) {
 
         const edited = filterImgRadioValue === "edited" ? true : false;
         const filter_func = filterImgRadioValue === "all" ? () => true : (id, stored_user_input) => filterEdited(id, stored_user_input, edited)
@@ -191,8 +193,8 @@ export default function BookpageChildren({stateObj, refObj}) {
                             </Form>
                         </Col>
                     </Row>
-                    <Row ref={refObj["list_row"]} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
-                        {imgList.filter((img) => filter_func(img.img_id, stateObj["storedUserInput"][0]))
+                    <Row ref={list_row_ref} className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}} id="list_row">
+                        {imgList.filter((img) => filter_func(img.img_id, storedUserInput))
                         .map((img, index) => mappedImages(img.img_type, img.img_id, img.image, index))}
                     </Row>
                 </Container>

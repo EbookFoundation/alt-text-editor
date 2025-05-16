@@ -1,17 +1,18 @@
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import { getCookie, updateAltsObj } from './helpers';
+import React from 'react';
 
 
 
-export default function SubmitOneButton({stateObj}) {
+export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, storedUserInput, imgToggleValue, numSelected}) {
 
-    async function updateAltTextDatabase(pk_map, alts_map, set_alts_map, stored_user_input, current_img_id, num_selected) {
-        const pk = pk_map[current_img_id];
-        if(stored_user_input === undefined) {return;}
-        const updated_alt_text = stored_user_input[current_img_id];
+    async function updateAltTextDatabase() {
+        const pk = imgIdToPKMap[imgToggleValue];
+        if(storedUserInput === undefined) {return;}
+        const updated_alt_text = storedUserInput[imgToggleValue];
         if(updated_alt_text === null || updated_alt_text === "") {return;}
-        if(num_selected === 0) {return;}
+        if(numSelected === 0) {return;}
 
         /*
             - create new alt with text and source
@@ -33,9 +34,9 @@ export default function SubmitOneButton({stateObj}) {
                 },
              }
         ).then((response) => {
-            const current_alts_obj = alts_map[current_img_id];
+            const current_alts_obj = imgIdtoAltsMap[imgToggleValue];
             updateAltsObj(response.data, current_alts_obj);
-            set_alts_map({...alts_map, [current_img_id]: {...current_alts_obj}});
+            setImgIdtoAltsMap({...imgIdtoAltsMap, [imgToggleValue]: {...current_alts_obj}});
         }).catch((error) => {
             console.log(error);
         });
@@ -44,9 +45,7 @@ export default function SubmitOneButton({stateObj}) {
     }
 
     return (
-        <Button onClick={() => updateAltTextDatabase(stateObj["imgIdToPKMap"][0], stateObj["imgIdtoAltsMap"][0],  
-                                                    stateObj["imgIdtoAltsMap"][1], stateObj["storedUserInput"][0], 
-                                                    stateObj["imgToggleValue"][0], stateObj["numSelected"][0])}>
+        <Button onClick={() => updateAltTextDatabase()}>
             Submit Only This Image
         </Button>
     );
