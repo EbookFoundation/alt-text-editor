@@ -6,13 +6,15 @@ import Col from "react-bootstrap/Col";
 import SubmitAllButton from './SubmitAllButton';
 import SubmitOneButton from './SubmitOneButton';
 
+import React from 'react';
 import axios from "axios";
 import { getCookie } from "./helpers";
 
 
 
 
-export default function ButtonContainer({stateObj, refObj}) {
+export default function ButtonContainer({storedUserInput, setStoredUserInput, userInputPK, setUserInputPK, bookNum, 
+    imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, imgToggleValue, numSelected, noEditImg}) {
 
     //change button names to reflect what they do more accurately
         //"save all suggestions", "suggest all"
@@ -34,8 +36,8 @@ export default function ButtonContainer({stateObj, refObj}) {
         //hide negative status texts
 
     const saveLocalStorage = () => {
-        if(Object.keys(stateObj["storedUserInput"][0]).length === 0) {return;}
-        if(stateObj["userInputPK"][0] === null) {
+        if(Object.keys(storedUserInput).length === 0) {return;}
+        if(userInputPK === null) {
             postLocalStorage();
         }
         else {
@@ -47,7 +49,7 @@ export default function ButtonContainer({stateObj, refObj}) {
     function postLocalStorage() {
         axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
             { "document": 1, //TODO: change to booknum here and in django models
-              "user_json": stateObj["storedUserInput"][0],
+              "user_json": storedUserInput,
               "submission_type": "SV"
             },
             {'withCredentials': true,
@@ -58,17 +60,17 @@ export default function ButtonContainer({stateObj, refObj}) {
                 },
             }
         ).then((response) => {
-            localStorage.setItem(stateObj["bookNum"][0], JSON.stringify(response.data.user_json));
-            stateObj["userInputPK"][1](response.data.id);
+            localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
+            setUserInputPK(response.data.id);
         }).catch((error) => {
             console.log(error);
         });
     }
 
     function patchLocalStorage() {
-        axios.patch(import.meta.env.DATABASE_URL + '/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
+        axios.patch(import.meta.env.DATABASE_URL + '/api/user_submissions/' + userInputPK + "/",
             {
-              "user_json": stateObj["storedUserInput"][0],
+              "user_json": storedUserInput,
               "submission_type": "SV"
             },
             {'withCredentials': true,
@@ -79,17 +81,19 @@ export default function ButtonContainer({stateObj, refObj}) {
                 },
             }
         ).then((response) => {
-            localStorage.setItem(stateObj["bookNum"][0], JSON.stringify(response.data.user_json));
+            localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
         }).catch((error) => {
             console.log(error);
         });
     }
 
     const deleteLocalStorage = () => {
-        localStorage.removeItem(stateObj["bookNum"][0]);
-        stateObj["storedUserInput"][1]({});
-        if(stateObj["userInputPK"][0] === null) {return;}
-        axios.delete(import.meta.env.DATABASE_URL + '/api/user_submissions/' + stateObj["userInputPK"][0] + "/",
+        if(userInputPK === null) {
+            localStorage.removeItem(bookNum);
+            setStoredUserInput({});
+            return;
+        }
+        axios.delete(import.meta.env.DATABASE_URL + '/api/user_submissions/' + userInputPK + "/",
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',
@@ -97,7 +101,12 @@ export default function ButtonContainer({stateObj, refObj}) {
                 'X-CSRFToken': getCookie('csrftoken')
                 },
             }
-        ).catch((error) => {
+        ).then(() => {
+            localStorage.removeItem(bookNum);
+            setStoredUserInput({});
+            setUserInputPK(null);
+        })
+        .catch((error) => {
             console.log(error);
         });
     }
@@ -111,14 +120,16 @@ export default function ButtonContainer({stateObj, refObj}) {
                         <Button onClick={saveLocalStorage}>Save All In Progress</Button>
                     </Col>
                     <Col className="d-grid">
-                        <SubmitAllButton stateObj={stateObj}/>
+                        <SubmitAllButton imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
+                        storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected}/>
                     </Col>
                 </Row>
             </Container>
             <Container className="px-0">
                 <Row>
                     <Col className="d-grid">
-                        <SubmitOneButton userInput={refObj["user_input"]} stateObj={stateObj}/>
+                        <SubmitOneButton imgIdToPKMap={imgIdToPKMap} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
+                        storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected}/>
                     </Col>
                     <Col className="d-grid">
                         <Button onClick={deleteLocalStorage}>Delete All In Progress</Button>

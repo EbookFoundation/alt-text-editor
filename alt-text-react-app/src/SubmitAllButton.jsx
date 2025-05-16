@@ -1,16 +1,17 @@
 import Button from 'react-bootstrap/Button';
+import React from 'react';
 
 import axios from 'axios';
 import { getCookie, updateAltsObj } from './helpers';
 
 
 
-export default function SubmitAllButton({stateObj}) {
+export default function SubmitAllButton({storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, setImgIdtoAltsMap}) {
 
-    async function updateAltTextDatabase(stored_user_input, edit_check, num_selected, map, set_map) {
-        if(edit_check) {return;}
-        if(num_selected === 0) {return;}
-        if(Object.keys(stored_user_input).length === 0) {return;}
+    async function updateAltTextDatabase() {
+        if(noEditImg) {return;}
+        if(numSelected === 0) {return;}
+        if(Object.keys(storedUserInput).length === 0) {return;}
 
         /*
             - user input automatically posts on submission_type: "SB" 
@@ -18,7 +19,7 @@ export default function SubmitAllButton({stateObj}) {
         */
         axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
             { 
-              "user_json": stored_user_input,
+              "user_json": storedUserInput,
               "submission_type": "SB",
               "document": 1 // hard coded for document for now, switch to pk based on booknum state when multiple books supported
             },
@@ -32,15 +33,15 @@ export default function SubmitAllButton({stateObj}) {
         ).then((response) => {
             for (const alt_created of response.data.alts_created) {
                 var current_alts_obj = null;
-                for (const [key, value] of Object.entries(map)) {
+                for (const [key, value] of Object.entries(imgIdtoAltsMap)) {
                     if(value.img_key === alt_created.img) {
-                        current_alts_obj = map[key];
+                        current_alts_obj = imgIdtoAltsMap[key];
                         break;
                     }
                 }
                 if(current_alts_obj === null) {return;}
                 updateAltsObj(alt_created, current_alts_obj);
-                set_map({...map, [alt_created.img_id]: {...current_alts_obj}});
+                setImgIdtoAltsMap({...imgIdtoAltsMap, [alt_created.img_id]: {...current_alts_obj}});
             }
         }).catch((error) => {
             console.log(error);
@@ -50,9 +51,7 @@ export default function SubmitAllButton({stateObj}) {
     }
 
     return (
-        <Button onClick={() => updateAltTextDatabase(stateObj["storedUserInput"][0], stateObj["noEditImg"][0],
-                                                     stateObj["numSelected"][0], stateObj["imgIdtoAltsMap"][0], 
-                                                     stateObj["imgIdtoAltsMap"][1])}>
+        <Button onClick={() => updateAltTextDatabase()}>
             Submit All In Progress
         </Button>
     );

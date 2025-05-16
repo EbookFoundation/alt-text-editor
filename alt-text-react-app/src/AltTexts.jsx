@@ -9,10 +9,11 @@ import Accordion from 'react-bootstrap/Accordion';
 
 import Votes from './Votes';
 import UserInput from './UserInput';
+import { UserContext } from './App';
 
-
+import { useState, useContext, useEffect } from 'react';
+import React from 'react';
 import { getCookie } from './helpers';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 
@@ -20,7 +21,9 @@ import './css_modules/alt.css'
 import './css_modules/accordion.css'
 
 
-export default function AltTexts({stateObj}) {
+export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInput, setStoredUserInput, numSelected, noEditImg}) {
+
+    const username = useContext(UserContext);
 
     //3 dot button on all alt text submissions
         //if you submitted, have 'edit' that allows you to edit in place then submit patch request on completion
@@ -66,8 +69,8 @@ export default function AltTexts({stateObj}) {
     const [preferredText, setPreferredText] = useState("");
 
 
-    const map = stateObj["imgIdtoAltsMap"][0];
-    const imgAltObj = stateObj["imgIdtoAltsMap"][0][stateObj["imgToggleValue"][0]];
+    const map = imgIdtoAltsMap;
+    const imgAltObj = imgIdtoAltsMap[imgToggleValue];
     const pref = imgAltObj?.preferred_alt_text;
   
     useEffect(() => {
@@ -172,7 +175,7 @@ export default function AltTexts({stateObj}) {
     }
 
     function CheckUserButton({alt_key, disable_check, text_value_state, source, class1, class2, editFunc}) {
-        if(stateObj["username"][0] === source) {
+        if(username === source) {
             return (<EditOrSaveButton alt_key={alt_key} disable_check={disable_check}
                 class1={class1} class2={class2} editFunc={editFunc}
             />);
@@ -201,9 +204,10 @@ export default function AltTexts({stateObj}) {
         );
     }
     //before user selects image or no alt key set yet (means existing alt objs are not real options)
-    if(stateObj["imgToggleValue"][0] === '' || imgAltObj.alt_key === null) {
+    if(imgToggleValue === '' || imgAltObj.alt_key === null) {
         return (
-            <UserInput stateObj={stateObj}/>
+            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
         );
     }
 
@@ -236,7 +240,8 @@ export default function AltTexts({stateObj}) {
                 </Accordion.Body>
             </Accordion.Item>
         </Accordion>
-        <UserInput stateObj={stateObj}/>
+        <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
         </>
     );
 

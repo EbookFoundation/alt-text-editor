@@ -1,5 +1,7 @@
 import './css_modules/alt.css';
 import { useState, useRef } from 'react';
+import React from 'react';
+
 
 
 export default function Votes({vote_identifier}) {

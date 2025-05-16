@@ -1,26 +1,28 @@
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import React from 'react';
 
 
 
 
-export default function IframeNav({stateObj, refObj}) {
+
+export default function IframeNav({numSelected, list_row_ref, numImgs, loadedImgList}) {
 
     const leftButtonClick = () => {
-        if (stateObj["numSelected"][0] <= 1) {return;}
-        let r = refObj["list_row"].current.children;
-        r[stateObj["numSelected"][0] - 2].querySelector("img").click();
+        if (numSelected <= 1) {return;}
+        let r = list_row_ref.current.children;
+        r[numSelected - 2].querySelector("img").click();
     }
     
     const rightButtonClick = () => {
-        if (stateObj["numSelected"][0] >= stateObj["numImgs"][0]) {return;}
-        let r = refObj["list_row"].current.children;
-        r[stateObj["numSelected"][0]].querySelector("img").click();
+        if (numSelected >= numImgs) {return;}
+        let r =list_row_ref.current.children;
+        r[numSelected].querySelector("img").click();
     }
     
     function loadImgNav() {
-        if(stateObj["loadedImgList"][0]) {
-            return  stateObj["numSelected"][0] + "/" + stateObj["numImgs"][0];
+        if(loadedImgList) {
+            return  numSelected + "/" + numImgs;
         }
 
         return "Loading...";
