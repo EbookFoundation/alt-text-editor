@@ -73,6 +73,7 @@ export default function NavbarDiv() {
                     </Nav>
                 </Col>
                 <Col md='auto'>
+                    {/* not sure what this should be... search new books to edit? or link to search on gutenberg.org? */}
                     <Form className='d-flex me-2 align-self-right'>
                         <InputGroup className="mb-0">
                             <Form.Control placeholder='Search...'

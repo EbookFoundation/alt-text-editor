@@ -82,6 +82,7 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
             }
         ).then((response) => {
             localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
+            setUserInputPK(response.data.id);
         }).catch((error) => {
             console.log(error);
         });
@@ -93,7 +94,10 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
             setStoredUserInput({});
             return;
         }
-        axios.delete(import.meta.env.DATABASE_URL + '/api/user_submissions/' + userInputPK + "/",
+        axios.patch(import.meta.env.DATABASE_URL + '/api/user_submissions/' + userInputPK + "/",
+            {
+                "user_json": {},
+            },
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',

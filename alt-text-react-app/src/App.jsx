@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useRef, useEffect, createContext, useContext } from 'react';
+import { useState, useRef, useEffect, createContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import Stack from 'react-bootstrap/Stack';
@@ -26,21 +26,24 @@ function App() {
   const [numImgs, setNumImgs] = useState(0);
   const [imgIdToPKMap, setImgIdToPKMap] = useState({});
   const [imgToggleValue, setImgToggleValue] = useState('');
-  const [userSubRadioValue, setUserSubRadioValue] = useState('');
   const [loadedImgList, setLoadedImgList] = useState(false);
   const [imgIdtoAltsMap, setImgIdtoAltsMap] = useState({});
   const [noEditImg, setNoEditImg] = useState(false);
   const [storedUserInput, setStoredUserInput] = useState({});
 
-  //these states will be dependent on fetches to django user data via sessionid in the future
-  const [username, setUsername] = useState('rowanmckereghan');
-  const [bookNum, setBookNum] = useState('67098');
+  // user must be set via API call for editing to be enabled – implement "you need to sign in page"
+  const [username, setUsername] = useState('');
   const [userInputPK, setUserInputPK] = useState(null);
+
+  //change default from winnie the pooh?
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const [bookNum, setBookNum] = useState(params.get('book') ?? '67098');
 
   const iframe = useRef(null);
   const list_row = useRef(null);
 
-  const iframe_url = import.meta.env.PROD ? 'https://dev.gutenberg.org/cache/epub/67098/pg67098-images.html' : '/iframe';
+  const iframe_url = import.meta.env.PROD ? 'https://dev.gutenberg.org/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html' : '/iframe';
 
   //proxy server for all pg books (just mirror content at diff url)
     //not rewriting, just mirroring
@@ -61,31 +64,46 @@ function App() {
 
   useEffect(() => {
 
-    //get old user input if already started editing
-    axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + username +'&document=1',
+    axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username',
       {'withCredentials': true,
-          headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-          },
-      }
-      ).then((response) => {
-        if(response.status === 200) {
-          //backup to database, store in local storage.
-          localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
-          setStoredUserInput(response.data.user_json);
-          setUserInputPK(response.data.id);
-        }
-        else {
-          const oldUserInput = localStorage.getItem(bookNum);
-          if(oldUserInput != null) {
-          setStoredUserInput(JSON.parse(oldUserInput));
-        }
-        }
-      }).catch((error) => {
-        console.log(error);
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+        },
+      })
+      .then((res) => {
+        setUsername(res.data.username);
+        axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + res.data.username +'&item=' + bookNum,
+          {'withCredentials': true,
+              headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+              },
+          }
+          ).then((response) => {
+            if(response.status === 200) {
+              //backup to database, store in local storage.
+              localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
+              setStoredUserInput(response.data.user_json);
+              setUserInputPK(response.data.id);
+            }
+            else {
+              const oldUserInput = localStorage.getItem(bookNum);
+              if(oldUserInput != null) {
+                setStoredUserInput(JSON.parse(oldUserInput));
+              }
+            }
+          }).catch((error) => {
+            console.log(error);
+          })
+      })
+      .catch((error) => {
+        console.log("No user found: " + error);
+        setUsername("No User Found");
       });
+    
   }, []);
   
 
