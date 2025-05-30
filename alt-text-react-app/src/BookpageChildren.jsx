@@ -125,10 +125,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
                     <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0" value={img_id} variant='outline-primary'
                     checked={img_id === imgToggleValue} onChange={(e) => setImgToggleValue(e.currentTarget.value)}
                     onClick={(e) => {
-                        iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
                         e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
-                        iframe.classList.remove("flash");
-                        setTimeout(function() {iframe.classList.add("flash")}, 100);
                         setNumSelected(index + 1);
                         if(img_type === 1) {
                             setNoEditImg(true);
@@ -139,6 +136,9 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
                         else {
                             setNoEditImg(false);
                         }
+                        iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
+                        iframe.classList.remove("flash");
+                        setTimeout(function() {iframe.classList.add("flash")}, 100);
                     }}>
                         <img id={"list_" + img_id} src={img_details.url} className="rounded"
                         style={{"maxWidth": "150px", "height": "auto"}} />
