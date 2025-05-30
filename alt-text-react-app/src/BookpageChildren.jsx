@@ -14,7 +14,7 @@ import './css_modules/accordion.css';
 
 
 
-export default function BookpageChildren({loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap, 
+export default function BookpageChildren({loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap, bookNum,
     setImgIdtoAltsMap, setNoEditImg, setNumSelected, storedUserInput, imgToggleValue, setImgToggleValue, iframe_ref, list_row_ref}) {
 
     const [imgList, setImgList] = useState([]);
@@ -24,7 +24,8 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
 
     //load images from urls, their related alt texts, and their primary keys from django database
     async function getImagesAltsAndPKs() {
-        const img_api_obj_list = await axios.get(import.meta.env.DATABASE_URL + '/api/documents/1/',
+        const img_api_obj_list = await axios.get(import.meta.env.DATABASE_URL + 
+            '/api/documents/get-project-item/?project=Project+Gutenberg&item=' + bookNum,
             {'withCredentials': true,
                 headers: {
                 'Content-Type': 'application/json',
@@ -33,7 +34,13 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
             }).then((response) => {
                 setLoadedImgList(true);
                 return response.data.imgs;
+            }).catch((error) => {
+                setNoEditImg(true);
+                console.log(error);
+                return null;
             });
+        
+        if(img_api_obj_list === null) {return;}
          
         // if pulling from local file instead of api for alt texts:
         // const altjson = await fetch("alt67098.json").then(response => response.json());
