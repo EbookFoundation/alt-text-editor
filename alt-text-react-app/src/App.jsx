@@ -43,7 +43,8 @@ function App() {
   const iframe = useRef(null);
   const list_row = useRef(null);
 
-  const iframe_url = import.meta.env.PROD ? 'https://dev.gutenberg.org/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html' : '/iframe';
+  const prod_url = 'https://altpoet.ebookfoundation.org:8443/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html';
+  const iframe_url = import.meta.env.PROD ? prod_url : '/iframe';
 
   //proxy server for all pg books (just mirror content at diff url)
     //not rewriting, just mirroring
