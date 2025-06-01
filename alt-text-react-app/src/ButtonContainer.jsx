@@ -48,7 +48,8 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
 
     function postLocalStorage() {
         axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
-            { "document": 1, //TODO: change to booknum here and in django models
+            { 
+              "item": bookNum,
               "user_json": storedUserInput,
               "submission_type": "SV"
             },
@@ -124,7 +125,7 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
                         <Button onClick={saveLocalStorage}>Save All In Progress</Button>
                     </Col>
                     <Col className="d-grid">
-                        <SubmitAllButton imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
+                        <SubmitAllButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
                         storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected}/>
                     </Col>
                 </Row>

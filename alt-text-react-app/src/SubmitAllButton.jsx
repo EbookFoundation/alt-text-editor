@@ -6,7 +6,7 @@ import { getCookie, updateAltsObj } from './helpers';
 
 
 
-export default function SubmitAllButton({storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, setImgIdtoAltsMap}) {
+export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, setImgIdtoAltsMap}) {
 
     async function updateAltTextDatabase() {
         if(noEditImg) {return;}
@@ -21,7 +21,7 @@ export default function SubmitAllButton({storedUserInput, noEditImg, numSelected
             { 
               "user_json": storedUserInput,
               "submission_type": "SB",
-              "document": 1 // hard coded for document for now, switch to pk based on booknum state when multiple books supported
+              "item": bookNum,
             },
             {'withCredentials': true,
                 headers: {
