@@ -73,6 +73,10 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         //temp solution for case that should not happen (database should match DOM)
     const handleIframeLoad = (e) => {
         try {
+            //remove all <a> links for now – maybe later find a way to keep internal links (ex: href=#CHAPTER1)
+            Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => a.href = "javascript:void(0)");
+
+            //make images clickable to select
             const images = e.currentTarget.contentDocument.body.querySelectorAll("img");
             const imgArr = Array.from(images);
             let imgObj = {};

@@ -5,7 +5,8 @@ import React from 'react';
 
 
 export default function Bookpage({bookNum, loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap,
-    setImgIdtoAltsMap, setNoEditImg, setNumSelected, storedUserInput, imgToggleValue, setImgToggleValue, iframe_ref, list_row_ref}) {
+    setImgIdtoAltsMap, setNoEditImg, setNumSelected, storedUserInput, imgToggleValue, setImgToggleValue, 
+    iframe_ref, list_row_ref}) {
     return(
     <Accordion defaultActiveKey="0">
         <Accordion.Item eventKey="1">

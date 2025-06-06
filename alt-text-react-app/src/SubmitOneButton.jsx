@@ -5,9 +5,11 @@ import React from 'react';
 
 
 
-export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, storedUserInput, imgToggleValue, numSelected}) {
+export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, noEditImg, 
+                                            storedUserInput, imgToggleValue, numSelected}) {
 
     async function updateAltTextDatabase() {
+        if(noEditImg) {return;}
         const pk = imgIdToPKMap[imgToggleValue];
         if(storedUserInput === undefined) {return;}
         const updated_alt_text = storedUserInput[imgToggleValue];

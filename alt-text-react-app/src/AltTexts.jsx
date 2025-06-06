@@ -204,7 +204,7 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
         );
     }
     //before user selects image or no alt key set yet (means existing alt objs are not real options)
-    if(imgToggleValue === '' || imgAltObj.alt_key === null) {
+    if(imgToggleValue === '' || noEditImg) {
         return (
             <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
@@ -215,27 +215,34 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
         return (<Votes vote_identifier={"img_" + pref.img + "_alt_" + pref.id}></Votes>);
     }
 
+    function PreferredAltText() {
+        if(pref === null || pref === undefined || pref == {}) {return(<></>);}
+        return(
+            <Container className='px-0 mx-0'>
+                <Row>
+                    <Col className='coltext mb-3'>
+                        <InputGroup>
+                            <PreferredVotes/>
+                            <FloatingLabel label={"Preferred (source: " + pref.source + ")"} controlId='altTextPref' className='preferred'>
+                                <Form.Control disabled={preferredDisabled} as='textarea' 
+                                style={{"height": "100px"}} value={preferredText} onChange={handlePreferredTextChange}/>
+                            </FloatingLabel>
+                        </InputGroup>
+                        <CheckUserButton alt_key={pref.id} disable_check={preferredDisabled} source={pref.source} editFunc={editPreferredAltText}
+                        text_value_state={preferredText} class1="prefovertext overtext" class2="prefovertext overtext"/>
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
+
     return (
         <>
         <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
                 <Accordion.Header>Alt Text Options</Accordion.Header>
                 <Accordion.Body className="accordion_align">
-                    <Container className='px-0 mx-0'>
-                        <Row>
-                            <Col className='coltext mb-3'>
-                                <InputGroup>
-                                    <PreferredVotes/>
-                                    <FloatingLabel label={"Preferred (source: " + pref.source + ")"} controlId='altTextPref' className='preferred'>
-                                        <Form.Control disabled={preferredDisabled} as='textarea' 
-                                        style={{"height": "100px"}} value={preferredText} onChange={handlePreferredTextChange}/>
-                                    </FloatingLabel>
-                                </InputGroup>
-                                <CheckUserButton alt_key={pref.id} disable_check={preferredDisabled} source={pref.source} editFunc={editPreferredAltText}
-                                text_value_state={preferredText} class1="prefovertext overtext" class2="prefovertext overtext"/>
-                            </Col>
-                        </Row>
-                    </Container>
+                    <PreferredAltText/>
                     {imgAltObj.alts_arr.map((altObj, index) => mappedAlts(altObj.text, altObj.img, altObj.id, altObj.source, index))}
                 </Accordion.Body>
             </Accordion.Item>

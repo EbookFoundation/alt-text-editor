@@ -37,6 +37,7 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
 
     const saveLocalStorage = () => {
         if(Object.keys(storedUserInput).length === 0) {return;}
+        if(noEditImg) {return;}
         if(userInputPK === null) {
             postLocalStorage();
         }
@@ -90,6 +91,7 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
     }
 
     const deleteLocalStorage = () => {
+        if(noEditImg) {return;}
         if(userInputPK === null) {
             localStorage.removeItem(bookNum);
             setStoredUserInput({});
@@ -134,7 +136,7 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, us
                 <Row>
                     <Col className="d-grid">
                         <SubmitOneButton imgIdToPKMap={imgIdToPKMap} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
-                        storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected}/>
+                        storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected} noEditImg={noEditImg}/>
                     </Col>
                     <Col className="d-grid">
                         <Button onClick={deleteLocalStorage}>Delete All In Progress</Button>

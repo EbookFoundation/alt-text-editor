@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import { useState, useRef, useEffect, createContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -45,6 +45,28 @@ function App() {
 
   const prod_url = 'https://altpoet.ebookfoundation.org:8443/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html';
   const iframe_url = import.meta.env.PROD ? prod_url : '/iframe';
+  
+
+  //iframe nav for pages
+    //link == contentDocument.location.href
+    //submit one image -> click next arrow button
+      //rename button to "submit alt text for this image only"
+
+  // alt text lists don't have to have preferred alt texts
+    //alt == null just means no preferred, still display options\
+  
+  //pop up alert when user closes page -> do you want to save?
+
+  //UI tool / info -> edits waiting to be saved / number of images worked on: #
+
+  //TODO (Eric): saving == submitting, make them the same thing
+    //still add delete button, replace edit / save button on alt text options list
+    //submit one == save one, submit all = save all, delete all = delete all submitted
+      //for both delete one and delete all, user auth check
+      //create admin user for django who can do anything without auth check on a per user basis
+    //keep list of alt texts created by user submission, to keep track of what session alt texts were created in
+
+  //TODO: status system for ranking
 
   //proxy server for all pg books (just mirror content at diff url)
     //not rewriting, just mirroring
