@@ -1,4 +1,3 @@
-import React, { use } from 'react';
 import { useState, useRef, useEffect, createContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -33,7 +32,6 @@ function App() {
 
   // user must be set via API call for editing to be enabled – implement "you need to sign in page"
   const [username, setUsername] = useState('');
-  const [userInputPK, setUserInputPK] = useState(null);
 
   //change default from winnie the pooh?
   const search = window.location.search;
@@ -65,6 +63,8 @@ function App() {
       //for both delete one and delete all, user auth check
       //create admin user for django who can do anything without auth check on a per user basis
     //keep list of alt texts created by user submission, to keep track of what session alt texts were created in
+      //remove user_json field, have localStorage updated by iterating over alt array
+      //submit one == submit all, just with json of one image + text key-value pair
 
   //TODO: status system for ranking
 
@@ -106,15 +106,17 @@ function App() {
               },
           }
           ).then((response) => {
+            let oldUserInput = {};
             if(response.status === 200) {
-              //backup to database, store in local storage.
-              localStorage.setItem(bookNum, JSON.stringify(response.data.user_json));
-              setStoredUserInput(response.data.user_json);
-              setUserInputPK(response.data.id);
+              for (const alt_created of response.data.alts_created) {
+                oldUserInput = {...oldUserInput, [alt_created.img]: alt_created.text}
+              }
+              localStorage.setItem(bookNum, JSON.stringify(oldUserInput));
+              setStoredUserInput(oldUserInput);
             }
             else {
-              const oldUserInput = localStorage.getItem(bookNum);
-              if(oldUserInput != null) {
+              oldUserInput = localStorage.getItem(bookNum);
+              if(oldUserInput !== null && oldUserInput !== undefined) {
                 setStoredUserInput(JSON.parse(oldUserInput));
               }
             }
@@ -152,7 +154,7 @@ function App() {
                 setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
               <ButtonContainer storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap}
                 imgIdtoAltsMap={imgIdtoAltsMap} imgIdToPKMap={imgIdToPKMap} imgToggleValue={imgToggleValue} bookNum={bookNum} 
-                setUserInputPK={setUserInputPK} userInputPK={userInputPK} numSelected={numSelected} noEditImg={noEditImg}/>
+                numSelected={numSelected} noEditImg={noEditImg}/>
             </Stack>
           </Col>
         </Row>

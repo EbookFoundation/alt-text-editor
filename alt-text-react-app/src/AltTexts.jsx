@@ -203,8 +203,16 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
             </Container>
         );
     }
-    //before user selects image or no alt key set yet (means existing alt objs are not real options)
-    if(imgToggleValue === '' || noEditImg) {
+    // before user selects image or editing is forbidden
+    if(noEditImg || imgToggleValue === '') {
+        return (
+            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
+        );
+    }
+
+    //if no alt text options, don't display accordion
+    if(imgAltObj.alt_key === null && imgAltObj.alts_arr.length === 0) {
         return (
             <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
@@ -238,17 +246,17 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
 
     return (
         <>
-        <Accordion defaultActiveKey="0">
-            <Accordion.Item eventKey="0">
-                <Accordion.Header>Alt Text Options</Accordion.Header>
-                <Accordion.Body className="accordion_align">
-                    <PreferredAltText/>
-                    {imgAltObj.alts_arr.map((altObj, index) => mappedAlts(altObj.text, altObj.img, altObj.id, altObj.source, index))}
-                </Accordion.Body>
-            </Accordion.Item>
-        </Accordion>
-        <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
-            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
+            <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header>Alt Text Options</Accordion.Header>
+                    <Accordion.Body className="accordion_align">
+                        <PreferredAltText/>
+                        {imgAltObj.alts_arr.map((altObj, index) => mappedAlts(altObj.text, altObj.img, altObj.id, altObj.source, index))}
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+                setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
         </>
     );
 

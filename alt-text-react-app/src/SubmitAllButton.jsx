@@ -14,13 +14,12 @@ export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, nu
         if(Object.keys(storedUserInput).length === 0) {return;}
 
         /*
-            - user input automatically posts on submission_type: "SB" 
+            - user input automatically posts all in progress alt texts
             - returns list of alts_created in obj
         */
         axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
             { 
-              "user_json": storedUserInput,
-              "submission_type": "SB",
+              "user_alt_text_json": storedUserInput,
               "item": bookNum,
             },
             {'withCredentials': true,
@@ -32,17 +31,12 @@ export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, nu
              }
         ).then((response) => {
             for (const alt_created of response.data.alts_created) {
-                var current_alts_obj = null;
-                for (const [key, value] of Object.entries(imgIdtoAltsMap)) {
-                    if(value.img_key === alt_created.img) {
-                        current_alts_obj = imgIdtoAltsMap[key];
-                        break;
-                    }
-                }
-                if(current_alts_obj === null) {return;}
+                var current_alts_obj = imgIdtoAltsMap[alt_created.img];
+                if(current_alts_obj === null || current_alts_obj === undefined) {continue;}
                 updateAltsObj(alt_created, current_alts_obj);
                 setImgIdtoAltsMap({...imgIdtoAltsMap, [alt_created.img_id]: {...current_alts_obj}});
             }
+            localStorage.setItem(bookNum, JSON.stringify(storedUserInput));
         }).catch((error) => {
             console.log(error);
         });
@@ -52,7 +46,7 @@ export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, nu
 
     return (
         <Button onClick={() => updateAltTextDatabase()}>
-            Submit All In Progress
+            Save All Alt Texts
         </Button>
     );
 

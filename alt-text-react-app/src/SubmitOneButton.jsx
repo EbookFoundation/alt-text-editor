@@ -5,28 +5,21 @@ import React from 'react';
 
 
 
-export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, noEditImg, 
+export default function SubmitOneButton({imgIdtoAltsMap, setImgIdtoAltsMap, noEditImg, bookNum,
                                             storedUserInput, imgToggleValue, numSelected}) {
 
     async function updateAltTextDatabase() {
         if(noEditImg) {return;}
-        const pk = imgIdToPKMap[imgToggleValue];
         if(storedUserInput === undefined) {return;}
-        const updated_alt_text = storedUserInput[imgToggleValue];
-        if(updated_alt_text === null || updated_alt_text === "") {return;}
         if(numSelected === 0) {return;}
 
-        /*
-            - create new alt with text and source
-                - if alt text exists already in list, update the source and alt preferred id
-                    - get request on image alts [] and compare (radio button?)
-                - if new user text, add new alt obj to imgs alts [] (should also post to alt table)
-                    - update img alt id with new obj id
-                - return img obj for radio list
-        */
-        axios.post(import.meta.env.DATABASE_URL + '/api/alts/' + pk.toString() + '/',
-            { "img": pk,
-              "text": updated_alt_text  
+        const updated_alt_text = storedUserInput[imgToggleValue];
+        if(updated_alt_text === null || updated_alt_text === "") {return;}
+
+        axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/',
+            { 
+              "item": bookNum,
+              "user_alt_text_json": {[imgToggleValue]: updated_alt_text}
             },
             {'withCredentials': true,
                 headers: {
@@ -34,11 +27,23 @@ export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdt
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
                 },
-             }
+            }
         ).then((response) => {
+            // get new and old alt objs
             const current_alts_obj = imgIdtoAltsMap[imgToggleValue];
-            updateAltsObj(response.data, current_alts_obj);
+            const new_alt_obj = response.data.alts_created.find((alt) => imgToggleValue === alt.img);
+
+            //update alt objs with new alt text saved
+            if (new_alt_obj === undefined) {return;}
+            updateAltsObj(new_alt_obj, current_alts_obj);
             setImgIdtoAltsMap({...imgIdtoAltsMap, [imgToggleValue]: {...current_alts_obj}});
+
+            //update local storage for img that was saved
+            const localStorageUserInput = JSON.parse(localStorage.getItem(bookNum));
+            if(localStorageUserInput !== null && localStorageUserInput !== undefined) {
+                localStorageUserInput[imgToggleValue] = new_alt_obj.text;
+                localStorage.setItem(bookNum, JSON.stringify(localStorageUserInput));
+            }
         }).catch((error) => {
             console.log(error);
         });
@@ -48,7 +53,7 @@ export default function SubmitOneButton({imgIdToPKMap, imgIdtoAltsMap, setImgIdt
 
     return (
         <Button onClick={() => updateAltTextDatabase()}>
-            Submit Only This Image
+            Save Alt Text For This Image Only
         </Button>
     );
 
