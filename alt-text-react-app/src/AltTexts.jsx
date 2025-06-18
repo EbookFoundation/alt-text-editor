@@ -21,7 +21,7 @@ import './css_modules/alt.css'
 import './css_modules/accordion.css'
 
 
-export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInput, setStoredUserInput, numSelected, noEditImg}) {
+export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, storedUserInput, setStoredUserInput, numSelected, noEditImg}) {
 
     const username = useContext(UserContext);
 
@@ -93,66 +93,103 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
     }, [map, imgAltObj]);
 
 
-    function editExistingAltText(alt_id) {
-        if(!disabledStates[alt_id]) {
-            try {
-                patchSubmittedText(alt_id, textStates[alt_id]);
-            }
-            catch(error) {
-                alert("Failed to update alt text: " + error);
-                return;
-            }
-        }
-        setDisabledStates(prev => ({
-          ...prev,
-          [alt_id]: !prev[alt_id]
-        }));
-    };
+    // function editExistingAltText(alt_id) {
+    //     if(!disabledStates[alt_id]) {
+    //         try {
+    //             patchSubmittedText(alt_id, textStates[alt_id]);
+    //         }
+    //         catch(error) {
+    //             alert("Failed to update alt text: " + error);
+    //             return;
+    //         }
+    //     }
+    //     setDisabledStates(prev => ({
+    //       ...prev,
+    //       [alt_id]: !prev[alt_id]
+    //     }));
+    // };
 
-    function editPreferredAltText(alt_id) {
-        if(!preferredDisabled) {
-            try {
-                patchSubmittedText(alt_id, preferredText);
-            }
-            catch(error) {
-                alert("Failed to update preferred alt text: " + error);
-                return;
-            }
-        }
-        setPreferredDisabled(!preferredDisabled);
-    }
+    // function editPreferredAltText(alt_id) {
+    //     if(!preferredDisabled) {
+    //         try {
+    //             patchSubmittedText(alt_id, preferredText);
+    //         }
+    //         catch(error) {
+    //             alert("Failed to update preferred alt text: " + error);
+    //             return;
+    //         }
+    //     }
+    //     setPreferredDisabled(!preferredDisabled);
+    // }
 
-    function patchSubmittedText(alt_id, text) {
-        axios.patch(import.meta.env.DATABASE_URL + '/api/alts/' + alt_id + "/",
-        {
-            "text": text
-        },
-        {'withCredentials': true,
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-            },
-        }) // maybe add Bootstrap <Alert> here instead of vanilla js?
-    }
+    // async function patchSubmittedText(alt_id, text) {
+    //     axios.patch(import.meta.env.DATABASE_URL + '/api/alts/' + alt_id + "/",
+    //     {
+    //         "text": text
+    //     },
+    //     {'withCredentials': true,
+    //         headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json',
+    //         'X-CSRFToken': getCookie('csrftoken')
+    //         },
+    //     }) // maybe add Bootstrap <Alert> here instead of vanilla js?
+    // }
 
-    const handleAltTextChange = (alt_id, newText) => {
-        setTextStates(prev => ({
-          ...prev,
-          [alt_id]: newText
-        }));
-    };
+    // const handleAltTextChange = (alt_id, newText) => {
+    //     setTextStates(prev => ({
+    //       ...prev,
+    //       [alt_id]: newText
+    //     }));
+    // };
       
     const handlePreferredTextChange = (e) => {
         setPreferredText(e.target.value);
     };
 
-    function EditOrSaveButton({alt_key, disable_check, class1, class2, editFunc}) {
-        return(
-            <Button className={disable_check ? class1 : class2} 
+    async function deleteUserAltText(alt_id) {
+        axios.delete(import.meta.env.DATABASE_URL + '/api/alts/' + alt_id + "/", 
+            {'withCredentials': true,
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }}
+        ).then((response) => {
+            // remove alt text from local storage
+            const localStorageUserInput = JSON.parse(localStorage.getItem(bookNum));
+            if(localStorageUserInput !== null && localStorageUserInput !== undefined) {
+                delete localStorageUserInput[imgToggleValue];
+                localStorage.setItem(bookNum, JSON.stringify(localStorageUserInput));
+            }
+            setStoredUserInput({...storedUserInput, [imgToggleValue]: ""});
+
+            //find alt in state and delete it
+            if(imgAltObj.alt_key !== null && imgAltObj.alt_key === alt_id) {
+                imgAltObj.alt_key = null;
+                delete imgAltObj.preferred_alt_text;
+            }
+            else {
+                for(let i = 0; i < imgAltObj.alts_arr.length; i++) {
+                    if(imgAltObj.alts_arr[i].id === alt_id) {
+                        imgAltObj.alts_arr.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        })
+        .catch((error) => {
+            alert("Failed to delete alt text: " + error);
+            console.log(error);
+        });
+    }
+
+    function DeleteButton({alt_key, class_name}) {
+        return (
+            <Button className={class_name} 
                     size='sm' 
-                    onClick={() => editFunc(alt_key)}>
-                {disable_check ? "Edit..." : "Save..."}
+                    onClick={() => deleteUserAltText(alt_key)}>
+                {"Delete..."}
             </Button>
         );
     }
@@ -174,13 +211,11 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
         );
     }
 
-    function CheckUserButton({alt_key, disable_check, text_value_state, source, class1, class2, editFunc}) {
+    function CheckUserButton({alt_key, text_value_state, source, class_name}) {
         if(username === source) {
-            return (<EditOrSaveButton alt_key={alt_key} disable_check={disable_check}
-                class1={class1} class2={class2} editFunc={editFunc}
-            />);
+            return (<DeleteButton alt_key={alt_key} class_name={class_name}/>);
         }
-        return (<CopyThenEditButton text_value_state={text_value_state} class_name={class1}/>);
+        return (<CopyThenEditButton text_value_state={text_value_state} class_name={class_name}/>);
     }
 
     const mappedAlts = (alt_text, img_key, alt_key, source, index) => {
@@ -196,8 +231,7 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
                                 value={textStates[alt_key]} onChange={(e) => handleAltTextChange(alt_key, e.target.value)}/>
                             </FloatingLabel>
                         </InputGroup>
-                        <CheckUserButton alt_key={alt_key} disable_check={disabledStates[alt_key]} editFunc={editExistingAltText}
-                        text_value_state={textStates[alt_key]} source={source} class1={'overtext'} class2={'savebutton overtext'}/>
+                        <CheckUserButton alt_key={alt_key} text_value_state={textStates[alt_key]} source={source} class_name={'overtext'}/>
                     </Col>
                 </Row>
             </Container>
@@ -236,8 +270,8 @@ export default function AltTexts({imgIdtoAltsMap, imgToggleValue, storedUserInpu
                                 style={{"height": "100px"}} value={preferredText} onChange={handlePreferredTextChange}/>
                             </FloatingLabel>
                         </InputGroup>
-                        <CheckUserButton alt_key={pref.id} disable_check={preferredDisabled} source={pref.source} editFunc={editPreferredAltText}
-                        text_value_state={preferredText} class1="prefovertext overtext" class2="prefovertext overtext"/>
+                        <CheckUserButton alt_key={pref.id} source={pref.source}
+                        text_value_state={preferredText} class_name="prefovertext overtext"/>
                     </Col>
                 </Row>
             </Container>

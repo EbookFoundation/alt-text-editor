@@ -44,6 +44,10 @@ function App() {
   const prod_url = 'https://altpoet.ebookfoundation.org:8443/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html';
   const iframe_url = import.meta.env.PROD ? prod_url : '/iframe';
   
+  //fix whatever is going on in django (migration? revert?)
+  //make sure can post alt text with empty text string
+  //change how decorative images are checked – if decorative, no edit
+    //have button next to save one / save all for "mark as decorative" third option
 
   //iframe nav for pages
     //link == contentDocument.location.href
@@ -150,7 +154,7 @@ function App() {
                 setImgToggleValue={setImgToggleValue} imgToggleValue={imgToggleValue} setLoadedImgList={setLoadedImgList}
                 loadedImgList={loadedImgList} setNoEditImg={setNoEditImg} setNumImgs={setNumImgs} setNumSelected={setNumSelected}
                 storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row}/>
-              <AltTexts imgIdtoAltsMap={imgIdtoAltsMap} imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+              <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
                 setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
               <ButtonContainer storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap}
                 imgIdtoAltsMap={imgIdtoAltsMap} imgIdToPKMap={imgIdToPKMap} imgToggleValue={imgToggleValue} bookNum={bookNum} 
