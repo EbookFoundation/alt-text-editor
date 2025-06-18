@@ -134,9 +134,10 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
                         if(img_type === 1) {
                             setNoEditImg(true);
                         }
-                        else if(img_details.x !== null && img_details.x < 100 && img_details.y !== null && img_details.y < 100) {
-                            setNoEditImg(true);
-                        }
+                        // find better way to check for decorative imgs
+                        // else if(img_details.x !== null && img_details.x < 100 && img_details.y !== null && img_details.y < 100) {
+                        //     setNoEditImg(true);
+                        // }
                         else {
                             setNoEditImg(false);
                         }
