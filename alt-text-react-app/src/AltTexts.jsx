@@ -219,7 +219,6 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
     }
 
     const mappedAlts = (alt_text, img_key, alt_key, source, index) => {
-        if(alt_text === "") {alt_text = "[none]";}
         return (
             <Container className='px-0 mx-0' key={alt_key}>
                 <Row>
@@ -228,7 +227,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
                             <Votes vote_identifier={"img_" + img_key + "_alt_" + alt_key}></Votes>
                             <FloatingLabel label={"Option " + (index + 1) + " (source: " + source + ")"} controlId={'altText_' + alt_key}>
                                 <Form.Control disabled={disabledStates[alt_key] ?? true} as='textarea' style={{"height": "100px"}} 
-                                value={textStates[alt_key]} onChange={(e) => handleAltTextChange(alt_key, e.target.value)}/>
+                                value={alt_text === "" ? "[none]" : textStates[alt_key]} onChange={(e) => handleAltTextChange(alt_key, e.target.value)}/>
                             </FloatingLabel>
                         </InputGroup>
                         <CheckUserButton alt_key={alt_key} text_value_state={textStates[alt_key]} source={source} class_name={'overtext'}/>
@@ -267,7 +266,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
                             <PreferredVotes/>
                             <FloatingLabel label={"Preferred (source: " + pref.source + ")"} controlId='altTextPref' className='preferred'>
                                 <Form.Control disabled={preferredDisabled} as='textarea' 
-                                style={{"height": "100px"}} value={preferredText} onChange={handlePreferredTextChange}/>
+                                style={{"height": "100px"}} value={preferredText === "" ? "[none]" : preferredText} onChange={handlePreferredTextChange}/>
                             </FloatingLabel>
                         </InputGroup>
                         <CheckUserButton alt_key={pref.id} source={pref.source}
