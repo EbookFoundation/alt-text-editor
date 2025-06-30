@@ -49,6 +49,11 @@ function App() {
   //change how decorative images are checked – if decorative, no edit
     //have button next to save one / save all for "mark as decorative" third option
 
+  //django admin can post / patch / delete outside of api viewmodels
+    // add check for username but no user
+
+  //page when loading booknum == # with no images, message user saying "check gutenberg, if images, we will add soon"
+
   //iframe nav for pages
     //link == contentDocument.location.href
     //submit one image -> click next arrow button

@@ -219,7 +219,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
     }
 
     const mappedAlts = (alt_text, img_key, alt_key, source, index) => {
-        if(alt_text === "") {return;}
+        if(alt_text === "") {alt_text = "[none]";}
         return (
             <Container className='px-0 mx-0' key={alt_key}>
                 <Row>
