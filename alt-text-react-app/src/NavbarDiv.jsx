@@ -70,6 +70,9 @@ export default function NavbarDiv() {
 
                     
                         </NavDropdown>
+                        <Nav.Link href="https://altpoet.ebookfoundation.org/alttext/">
+                            Guide to Good Alt Texts
+                        </Nav.Link>
                     </Nav>
                 </Col>
                 <Col md='auto'>

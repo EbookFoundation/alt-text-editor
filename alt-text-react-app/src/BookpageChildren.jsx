@@ -14,7 +14,7 @@ import './css_modules/accordion.css';
 
 
 
-export default function BookpageChildren({loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap, bookNum,
+export default function BookpageChildren({loadedImgList, setLoadedImgList, setNumImgs, setImgIdtoPKMap, bookNum, iframe_url,
     setImgIdtoAltsMap, setNoEditImg, setNumSelected, storedUserInput, imgToggleValue, setImgToggleValue, iframe_ref, list_row_ref}) {
 
     const [imgList, setImgList] = useState([]);
@@ -73,8 +73,12 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         //temp solution for case that should not happen (database should match DOM)
     const handleIframeLoad = (e) => {
         try {
-            //remove all <a> links for now – maybe later find a way to keep internal links (ex: href=#CHAPTER1)
-            Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => a.href = "javascript:void(0)");
+            //remove all <a> links that do not have '#' (internal links / chapter markers)
+            Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => {
+                if(a.href === undefined || (a.href !== "" && a.href.match(iframe_url + "#") !== null))
+                    return;
+                a.href = "javascript:void(0)";
+            });
 
             //make images clickable to select
             const images = e.currentTarget.contentDocument.body.querySelectorAll("img");

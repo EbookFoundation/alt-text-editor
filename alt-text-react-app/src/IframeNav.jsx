@@ -1,6 +1,6 @@
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 
 
@@ -16,9 +16,14 @@ export default function IframeNav({numSelected, list_row_ref, numImgs, loadedImg
     
     const rightButtonClick = () => {
         if (numSelected >= numImgs) {return;}
-        let r =list_row_ref.current.children;
+        let r = list_row_ref.current.children;
         r[numSelected].querySelector("img").click();
     }
+
+    useEffect(() => {
+        if(list_row_ref.current == null) {return;}
+        if(numImgs > 0) {rightButtonClick();}
+    }, [loadedImgList, list_row_ref]);
     
     function loadImgNav() {
         if(loadedImgList) {

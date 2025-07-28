@@ -54,6 +54,11 @@ function App() {
 
   //page when loading booknum == # with no images, message user saying "check gutenberg, if images, we will add soon"
 
+  //add frontend button + api
+    //load all new alt texts when claude generates through document
+  
+  //get <title> from iframe: you are now editing <title>CONTENT</title>
+
   //iframe nav for pages
     //link == contentDocument.location.href
     //submit one image -> click next arrow button
@@ -158,9 +163,9 @@ function App() {
               <Bookpage bookNum={bookNum} setImgIdtoAltsMap={setImgIdtoAltsMap} setImgIdtoPKMap={setImgIdToPKMap}
                 setImgToggleValue={setImgToggleValue} imgToggleValue={imgToggleValue} setLoadedImgList={setLoadedImgList}
                 loadedImgList={loadedImgList} setNoEditImg={setNoEditImg} setNumImgs={setNumImgs} setNumSelected={setNumSelected}
-                storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row}/>
-              <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
-                setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
+                storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row} iframe_url={iframe_url}/>
+              <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue} 
+              storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
               <ButtonContainer storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap}
                 imgIdtoAltsMap={imgIdtoAltsMap} imgIdToPKMap={imgIdToPKMap} imgToggleValue={imgToggleValue} bookNum={bookNum} 
                 numSelected={numSelected} noEditImg={noEditImg}/>

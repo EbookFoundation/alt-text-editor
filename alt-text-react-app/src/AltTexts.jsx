@@ -21,7 +21,8 @@ import './css_modules/alt.css'
 import './css_modules/accordion.css'
 
 
-export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, storedUserInput, setStoredUserInput, numSelected, noEditImg}) {
+export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, imgToggleValue, storedUserInput, 
+                                    setStoredUserInput, numSelected, noEditImg}) {
 
     const username = useContext(UserContext);
 
@@ -195,13 +196,13 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
     }
 
     function CopyThenEditButton({text_value_state, class_name}) {
-        const [buttonText, setButtonText] = useState("Copy...");
+        const [buttonText, setButtonText] = useState("Duplicate...");
         return (
             <Button className={class_name}
                     size='sm' 
                     onClick={() => {
-                        navigator.clipboard.writeText(text_value_state);
-                        setButtonText("Copied!");
+                        setStoredUserInput({...storedUserInput, [imgToggleValue]: text_value_state});
+                        setButtonText("Duplicated!");
                         setTimeout(() => {
                             setButtonText("Copy...");
                         }, 2000);
@@ -218,13 +219,19 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
         return (<CopyThenEditButton text_value_state={text_value_state} class_name={class_name}/>);
     }
 
-    const mappedAlts = (alt_text, img_key, alt_key, source, index) => {
+    
+
+    const mappedAlts = (alt_obj, alt_text, img_key, alt_key, source, votes, sort_func, index) => {
+
+        source = source ?? "Project Gutenberg"
+
         return (
             <Container className='px-0 mx-0' key={alt_key}>
                 <Row>
                     <Col className='coltext mb-3'>
                         <InputGroup>
-                            <Votes vote_identifier={"img_" + img_key + "_alt_" + alt_key}></Votes>
+                            <Votes vote_identifier={"img_" + img_key + "_alt_" + alt_key} pk={alt_key} num_votes={votes} 
+                            alt_obj={alt_obj} sort_func={sort_func}/>
                             <FloatingLabel label={"Option " + (index + 1) + " (source: " + source + ")"} controlId={'altText_' + alt_key}>
                                 <Form.Control disabled={disabledStates[alt_key] ?? true} as='textarea' style={{"height": "100px"}} 
                                 value={alt_text === "" ? "[none]" : textStates[alt_key]} onChange={(e) => handleAltTextChange(alt_key, e.target.value)}/>
@@ -253,7 +260,8 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
     }
 
     function PreferredVotes() {
-        return (<Votes vote_identifier={"img_" + pref.img + "_alt_" + pref.id}></Votes>);
+        return (<Votes vote_identifier={"img_" + pref.img + "_alt_" + pref.id} 
+        pk={pref.id} num_votes={pref.votes} alt_obj={pref} sort_func={() => {}}></Votes>);
     }
 
     function PreferredAltText() {
@@ -264,7 +272,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
                     <Col className='coltext mb-3'>
                         <InputGroup>
                             <PreferredVotes/>
-                            <FloatingLabel label={"Preferred (source: " + pref.source + ")"} controlId='altTextPref' className='preferred'>
+                            <FloatingLabel label={"Preferred (source: " + (pref.source ?? "Project Gutenberg") + ")"} controlId='altTextPref' className='preferred'>
                                 <Form.Control disabled={preferredDisabled} as='textarea' 
                                 style={{"height": "100px"}} value={preferredText === "" ? "[none]" : preferredText} onChange={handlePreferredTextChange}/>
                             </FloatingLabel>
@@ -277,6 +285,11 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
         );
     }
 
+    function sort_alts_arr(alts_arr) {
+        const sorted_arr = alts_arr.toSorted((a, b) => b.votes - a.votes);
+        setImgIdtoAltsMap({...imgIdtoAltsMap, [imgToggleValue]: {...imgAltObj, "alts_arr": sorted_arr}});
+    }
+
     return (
         <>
             <Accordion defaultActiveKey="0">
@@ -284,7 +297,9 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, imgToggleValue, store
                     <Accordion.Header>Alt Text Options</Accordion.Header>
                     <Accordion.Body className="accordion_align">
                         <PreferredAltText/>
-                        {imgAltObj.alts_arr.map((altObj, index) => mappedAlts(altObj.text, altObj.img, altObj.id, altObj.source, index))}
+                        {imgAltObj.alts_arr.sort((a, b) => b.votes - a.votes)
+                                            .map((altObj, index) => mappedAlts(altObj, altObj.text, altObj.img, altObj.id, altObj.source, 
+                                                                    altObj.votes, () => sort_alts_arr(imgAltObj.alts_arr), index))}
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
