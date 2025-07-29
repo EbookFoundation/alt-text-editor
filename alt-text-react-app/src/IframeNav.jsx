@@ -22,7 +22,7 @@ export default function IframeNav({numSelected, list_row_ref, numImgs, loadedImg
 
     useEffect(() => {
         if(list_row_ref.current == null) {return;}
-        if(numImgs > 0) {rightButtonClick();}
+        if(numImgs > 0) {setTimeout(function() {rightButtonClick();}, 300);}
     }, [loadedImgList, list_row_ref]);
     
     function loadImgNav() {
