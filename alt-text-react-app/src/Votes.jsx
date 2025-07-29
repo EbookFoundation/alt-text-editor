@@ -19,7 +19,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
 
     async function vote(vote_type) {
         setVoteType(vote_type);
-        axios.post(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/vote/',
+        await axios.post(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/vote/',
             { 
               "vote": vote_type
             },
@@ -39,7 +39,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
 
     async function get_vote() {
         if(voteType !== "") {return;}
-        axios.get(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/get_vote/',
+        await axios.get(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/get_vote/',
             {'withCredentials': true,
                 headers: {
                 'Accept': 'application/json',
@@ -80,7 +80,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
         get_vote();
     }, [])
 
-    const upvoteToggle = () => {
+    const upvoteToggle = async () => {
         if(downvoteRef.current.checked) {
             downvoteRef.current.checked = false;
             setDownvoteChecked(false);
@@ -88,15 +88,15 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
 
         setUpvoteChecked(upvoteRef.current.checked);
         if(upvoteRef.current.checked) {
-            vote("UP");
+            await vote("UP");
         }
         else {
-            vote("NO");
+            await vote("NO");
         }
         sort_func();
     }
 
-    const downvoteToggle = () => {
+    const downvoteToggle = async () => {
         if(upvoteRef.current.checked) {
             upvoteRef.current.checked = false;
             setUpvoteChecked(false);
@@ -104,10 +104,10 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
 
         setDownvoteChecked(downvoteRef.current.checked);
         if(downvoteRef.current.checked) {
-            vote("DN");
+            await vote("DN");
         }
         else {
-            vote("NO");
+            await vote("NO");
         }
         sort_func();
     }

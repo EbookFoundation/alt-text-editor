@@ -204,7 +204,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
                         setStoredUserInput({...storedUserInput, [imgToggleValue]: text_value_state});
                         setButtonText("Duplicated!");
                         setTimeout(() => {
-                            setButtonText("Copy...");
+                            setButtonText("Duplicate...");
                         }, 2000);
                     }}>
                 {buttonText}
@@ -288,6 +288,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
     function sort_alts_arr(alts_arr) {
         const sorted_arr = alts_arr.toSorted((a, b) => b.votes - a.votes);
         setImgIdtoAltsMap({...imgIdtoAltsMap, [imgToggleValue]: {...imgAltObj, "alts_arr": sorted_arr}});
+        console.log(imgAltObj.alts_arr);
     }
 
     return (
