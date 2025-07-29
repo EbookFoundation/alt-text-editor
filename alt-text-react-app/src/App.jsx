@@ -15,11 +15,20 @@ import IframeNav from './IframeNav';
 import axios from 'axios';
 import { getCookie } from './helpers';
 import './css_modules/App.css';
+import NoImage from './NoImage';
 
 export const UserContext = createContext("");
 
 
 function App() {
+
+  //change default from winnie the pooh?
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const [bookNum, setBookNum] = useState(params.get('book') ?? '67098');
+
+  const [docExists, setDocExists] = useState(true);
+
 
   const [numSelected, setNumSelected] = useState(0);
   const [numImgs, setNumImgs] = useState(0);
@@ -32,11 +41,6 @@ function App() {
 
   // user must be set via API call for editing to be enabled – implement "you need to sign in page"
   const [username, setUsername] = useState('');
-
-  //change default from winnie the pooh?
-  const search = window.location.search;
-  const params = new URLSearchParams(search);
-  const [bookNum, setBookNum] = useState(params.get('book') ?? '67098');
 
   const iframe = useRef(null);
   const list_row = useRef(null);
@@ -101,7 +105,15 @@ function App() {
 
   useEffect(() => {
 
-    axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username',
+    axios.get(import.meta.env.DATABASE_URL + '/api/documents/doc-check/?project=Project+Gutenberg&item=' + bookNum,
+    {'withCredentials': true,
+      headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+      },
+    }).then((res) => {
+       setDocExists(true);
+        axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username',
       {'withCredentials': true,
         headers: {
         'Accept': 'application/json',
@@ -142,9 +154,22 @@ function App() {
         console.log("No user found: " + error);
         setUsername("No User Found");
       });
-    
+    }).catch((error) => {
+        console.log(error);
+        setDocExists(false);
+        return;
+    });
+
   }, []);
   
+  if(!docExists) {
+    return (
+     <>
+      <NavbarDiv/>
+      <NoImage/>
+     </> 
+    );
+  }
 
   return (
     <UserContext.Provider value={username}>

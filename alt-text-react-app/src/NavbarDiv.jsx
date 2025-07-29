@@ -6,13 +6,30 @@ import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
-import React from 'react';
+import { useState } from 'react';
 import './css_modules/nav.css'
 
 
 
 export default function NavbarDiv() {
+
+    const [searchValue, setSearchValue] = useState("");
+
+    function get_url() {
+        if(searchValue === "") {return "#";}
+        if(import.meta.env.PROD) {
+            return "https://altpoet.ebookfoundation.org:8443/alttext/?book=" + searchValue;
+        }
+        else {
+            return "http://127.0.0.1:5173/?book=" + searchValue;
+        }
+    }
+
+    const click = (e) => {
+        e.currentTarget.href = get_url();
+    }        
 
     return (
     <Navbar className="bg-info-subtle border border-info-subtle py-0 mb-2">
@@ -29,6 +46,9 @@ export default function NavbarDiv() {
             <Row>
                 <Col className='px-0' xs lg="8.5">
                         <Nav>
+                        <Nav.Link href="https://altpoet.ebookfoundation.org/">
+                           Home
+                        </Nav.Link>
                         <NavDropdown title="About">
                             <NavDropdown.Item href='https://www.gutenberg.org/about/'>About Project Gutenberg</NavDropdown.Item>
                             <NavDropdown.Item href='https://www.gutenberg.org/policy/collection_development.html'>Collection Development</NavDropdown.Item>                                       
@@ -79,14 +99,14 @@ export default function NavbarDiv() {
                     {/* not sure what this should be... search new books to edit? or link to search on gutenberg.org? */}
                     <Form className='d-flex me-2 align-self-right'>
                         <InputGroup className="mb-0">
-                            <Form.Control placeholder='Search...'
-                            aria-describedby="searchbar"  id='searchbar'
+                            <Form.Control placeholder='Enter E-Book Number...' onChange={(e) => setSearchValue(e.currentTarget.value)}
+                            value={searchValue} aria-describedby="searchbar"  id='searchbar'
                             />
-                            <InputGroup.Text id="search">
+                            <Button as="a" href="#" id="search" variant='secondary' onClick={click}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                                 </svg>
-                            </InputGroup.Text>
+                            </Button>
                         </InputGroup>
                     </Form>
                 </Col>
