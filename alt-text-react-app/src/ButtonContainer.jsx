@@ -9,12 +9,13 @@ import SubmitOneButton from './SubmitOneButton';
 import React from 'react';
 import axios from "axios";
 import { getCookie } from "./helpers";
+import AIAltsButton from "./AIAltsButton";
 
 
 
 
-export default function ButtonContainer({storedUserInput, setStoredUserInput, bookNum, 
-    imgIdToPKMap, imgIdtoAltsMap, setImgIdtoAltsMap, imgToggleValue, numSelected, noEditImg}) {
+export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, 
+                                            imgToggleValue, numSelected, noEditImg, docPK}) {
 
     //accordion title: "working on {book title}, {book number}, {extra description if needed}"
 
@@ -63,6 +64,11 @@ export default function ButtonContainer({storedUserInput, setStoredUserInput, bo
                 <Col className="d-grid">
                     <SubmitAllButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
                     storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected}/>
+                </Col>
+            </Row>
+            <Row className="mt-3 mx-5">
+                <Col className="d-grid">
+                    <AIAltsButton pk={docPK} setImgIdtoAltsMap={setImgIdtoAltsMap}/>
                 </Col>
             </Row>
         </Container>

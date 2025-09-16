@@ -38,6 +38,7 @@ function App() {
   const [imgIdtoAltsMap, setImgIdtoAltsMap] = useState({});
   const [noEditImg, setNoEditImg] = useState(false);
   const [storedUserInput, setStoredUserInput] = useState({});
+  const [docPK, setDocPK] = useState(0);
 
   // user must be set via API call for editing to be enabled – implement "you need to sign in page"
   const [username, setUsername] = useState('');
@@ -47,6 +48,12 @@ function App() {
 
   const prod_url = 'https://altpoet.ebookfoundation.org:8443/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html';
   const iframe_url = import.meta.env.PROD ? prod_url : '/iframe';
+
+  //change user sub to make preferred if ONLY ONE alt text in image is one just submitted
+
+  //user document relations table – status: working, finished, etc.
+    //button to mark as finished; represented by enum in json; progress not necessarily linear
+    //if document is marked as finished, return "view only" page with no editing box / buttons
   
   //fix whatever is going on in django (migration? revert?)
   //make sure can post alt text with empty text string
@@ -112,25 +119,26 @@ function App() {
       'X-CSRFToken': getCookie('csrftoken')
       },
     }).then((res) => {
-       setDocExists(true);
+        setDocExists(true);
+        setDocPK(res.data.id);
         axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username',
-      {'withCredentials': true,
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken')
-        },
-      })
-      .then((res) => {
-        setUsername(res.data.username);
-        axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + res.data.username +'&item=' + bookNum,
           {'withCredentials': true,
-              headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRFToken': getCookie('csrftoken')
-              },
-          }
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+            },
+          })
+        .then((res) => {
+          setUsername(res.data.username);
+          axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + res.data.username +'&item=' + bookNum,
+            {'withCredentials': true,
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+                },
+            }
           ).then((response) => {
             let oldUserInput = {};
             if(response.status === 200) {
@@ -149,17 +157,16 @@ function App() {
           }).catch((error) => {
             console.log(error);
           })
-      })
-      .catch((error) => {
-        console.log("No user found: " + error);
-        setUsername("No User Found");
-      });
-    }).catch((error) => {
-        console.log(error);
-        setDocExists(false);
-        return;
-    });
-
+        })
+        .catch((error) => {
+          console.log("No user found: " + error);
+          setUsername("No User Found");
+        });
+      }).catch((error) => {
+          console.log(error);
+          setDocExists(false);
+          return;
+        });
   }, []);
   
   if(!docExists) {
@@ -191,9 +198,8 @@ function App() {
                 storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row} iframe_url={iframe_url}/>
               <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue} 
               storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
-              <ButtonContainer storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap}
-                imgIdtoAltsMap={imgIdtoAltsMap} imgIdToPKMap={imgIdToPKMap} imgToggleValue={imgToggleValue} bookNum={bookNum} 
-                numSelected={numSelected} noEditImg={noEditImg}/>
+              <ButtonContainer storedUserInput={storedUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap} imgIdtoAltsMap={imgIdtoAltsMap} 
+                imgToggleValue={imgToggleValue} bookNum={bookNum} numSelected={numSelected} noEditImg={noEditImg} docPK={docPK}/>
             </Stack>
           </Col>
         </Row>
