@@ -16,6 +16,7 @@ import axios from 'axios';
 import { getCookie } from './helpers';
 import './css_modules/App.css';
 import NoImage from './NoImage';
+import ChangeStatusButton from './ChangeStatusButton';
 
 export const UserContext = createContext("");
 
@@ -28,6 +29,7 @@ function App() {
   const [bookNum, setBookNum] = useState(params.get('book') ?? '67098');
 
   const [docExists, setDocExists] = useState(true);
+  const [userSubStatus, setUserSubStatus] = useState("No Progress");
 
 
   const [numSelected, setNumSelected] = useState(0);
@@ -54,6 +56,7 @@ function App() {
   //user document relations table – status: working, finished, etc.
     //button to mark as finished; represented by enum in json; progress not necessarily linear
     //if document is marked as finished, return "view only" page with no editing box / buttons
+      //add button that lets them reopen to keep editing - change status back to "in progress"
   
   //fix whatever is going on in django (migration? revert?)
   //make sure can post alt text with empty text string
@@ -142,6 +145,7 @@ function App() {
           ).then((response) => {
             let oldUserInput = {};
             if(response.status === 200) {
+              setUserSubStatus(response.data.status);
               for (const alt_created of response.data.alts_created) {
                 oldUserInput = {...oldUserInput, [alt_created.img]: alt_created.text}
               }
@@ -178,6 +182,36 @@ function App() {
     );
   }
 
+  if(userSubStatus === "Complete") {
+    return(
+      <UserContext.Provider value={username}>
+      <NavbarDiv/>
+      <Container fluid className='px-4 py-2'>
+        <Row align="end">
+          <Col>
+            <Stack className='gap-3'>
+              <IframeNav numSelected={numSelected} numImgs={numImgs} loadedImgList={loadedImgList} list_row_ref={list_row}/>
+              <iframe ref={iframe} id="book" style={{height: "80vh", width: "auto"}} 
+              className="border border-secondary border-4" src={iframe_url}/>
+            </Stack>
+          </Col>
+          <Col>
+            <Stack className='gap-3'>
+              <Bookpage bookNum={bookNum} setImgIdtoAltsMap={setImgIdtoAltsMap} setImgIdtoPKMap={setImgIdToPKMap}
+                setImgToggleValue={setImgToggleValue} imgToggleValue={imgToggleValue} setLoadedImgList={setLoadedImgList}
+                loadedImgList={loadedImgList} setNoEditImg={setNoEditImg} setNumImgs={setNumImgs} setNumSelected={setNumSelected}
+                storedUserInput={storedUserInput} iframe_ref={iframe} list_row_ref={list_row} iframe_url={iframe_url}/>
+              <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue} 
+              storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={true}/>
+              <ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} bookNum={bookNum}/>
+            </Stack>
+          </Col>
+        </Row>
+      </Container>
+    </UserContext.Provider>
+    );
+  }
+
   return (
     <UserContext.Provider value={username}>
       <NavbarDiv/>
@@ -199,7 +233,9 @@ function App() {
               <AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue} 
               storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
               <ButtonContainer storedUserInput={storedUserInput} setImgIdtoAltsMap={setImgIdtoAltsMap} imgIdtoAltsMap={imgIdtoAltsMap} 
-                imgToggleValue={imgToggleValue} bookNum={bookNum} numSelected={numSelected} noEditImg={noEditImg} docPK={docPK}/>
+                imgToggleValue={imgToggleValue} bookNum={bookNum} numSelected={numSelected} noEditImg={noEditImg} docPK={docPK}
+                  userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus}
+                />
             </Stack>
           </Col>
         </Row>

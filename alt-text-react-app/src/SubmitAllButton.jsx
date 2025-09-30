@@ -1,12 +1,17 @@
 import Button from 'react-bootstrap/Button';
-import React from 'react';
+import { UserContext } from './App';
+import { useContext } from 'react';
 
 import axios from 'axios';
-import { getCookie, updateAltsObj } from './helpers';
+import { getCookie, set_status, updateAltsObj } from './helpers';
 
 
 
-export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, setImgIdtoAltsMap}) {
+export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, 
+                                            setImgIdtoAltsMap, setUserSubStatus}) {
+
+
+    const username = useContext(UserContext); 
 
     async function updateAltTextDatabase() {
         if(noEditImg) {return;}
@@ -37,6 +42,7 @@ export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, nu
                 setImgIdtoAltsMap({...imgIdtoAltsMap, [alt_created.img_id]: {...current_alts_obj}});
             }
             localStorage.setItem(bookNum, JSON.stringify(storedUserInput));
+            set_status(username, 1, setUserSubStatus, bookNum);
         }).catch((error) => {
             console.log(error);
         });

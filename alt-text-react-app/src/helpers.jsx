@@ -1,4 +1,4 @@
-
+import axios from "axios";
 
 //get csrf token for django auth with name == 'csrftoken'
 export function getCookie(name) {
@@ -56,3 +56,34 @@ export function updateAltsObj(response_alt_obj, current_alts_obj) {
     //otherwise push old preferred onto options
     current_alts_obj.alts_arr.push(prev_preferred);
 }
+
+export function set_status(username, status, set_user_status_state, bookNum) {
+    
+    axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + username +'&item=' + bookNum,
+        {'withCredentials': true,
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+            },
+        }).then((res) => {
+                axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/' + res.data.id + '/set_status/',
+                {
+                    'status': status
+                },
+                {'withCredentials': true,
+                    headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                    },
+                }).then((post_res) => 
+                    set_user_status_state(post_res.data.status)
+                ).catch((post_error) => {
+                    console.log(post_error);
+                    set_user_status_state("In Progress");
+                });
+        }).catch((error) => {
+            console.log(error);
+        });
+    }

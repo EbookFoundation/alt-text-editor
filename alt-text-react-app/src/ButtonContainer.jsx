@@ -5,17 +5,18 @@ import Col from "react-bootstrap/Col";
 
 import SubmitAllButton from './SubmitAllButton';
 import SubmitOneButton from './SubmitOneButton';
+import AIAltsButton from "./AIAltsButton";
+import ChangeStatusButton from "./ChangeStatusButton";
 
 import React from 'react';
 import axios from "axios";
 import { getCookie } from "./helpers";
-import AIAltsButton from "./AIAltsButton";
 
 
 
 
 export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, 
-                                            imgToggleValue, numSelected, noEditImg, docPK}) {
+                                            imgToggleValue, numSelected, noEditImg, docPK, userSubStatus, setUserSubStatus}) {
 
     //accordion title: "working on {book title}, {book number}, {extra description if needed}"
 
@@ -58,17 +59,20 @@ export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMa
         <Container className="px-0">
             <Row>
                 <Col className="d-grid">
-                    <SubmitOneButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
+                    <SubmitOneButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} setUserSubStatus={setUserSubStatus}
                     storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected} noEditImg={noEditImg}/>
                 </Col>
                 <Col className="d-grid">
                     <SubmitAllButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
-                    storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected}/>
+                    storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected} setUserSubStatus={setUserSubStatus}/>
                 </Col>
             </Row>
-            <Row className="mt-3 mx-5">
+            <Row className="mt-3">
                 <Col className="d-grid">
                     <AIAltsButton pk={docPK} setImgIdtoAltsMap={setImgIdtoAltsMap}/>
+                </Col>
+                <Col className="d-grid">
+                    <ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} bookNum={bookNum}/>
                 </Col>
             </Row>
         </Container>
