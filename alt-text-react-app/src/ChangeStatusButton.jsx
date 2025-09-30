@@ -23,7 +23,7 @@ export default function ChangeStatusButton({userSubStatus, setUserSubStatus, boo
             return "Reopen Document For Editing";
         else 
             return "Close Document And Mark As Complete";
-    }
+    }        
 
 
     return (

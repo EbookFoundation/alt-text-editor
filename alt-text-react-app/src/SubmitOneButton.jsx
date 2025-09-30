@@ -11,6 +11,7 @@ export default function SubmitOneButton({imgIdtoAltsMap, setImgIdtoAltsMap, noEd
 
     const username = useContext(UserContext);
 
+    //custom to only update one image
     async function updateAltTextDatabase() {
         if(noEditImg) {return;}
         if(storedUserInput === undefined) {return;}

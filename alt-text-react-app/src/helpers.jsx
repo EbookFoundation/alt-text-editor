@@ -67,6 +67,10 @@ export function set_status(username, status, set_user_status_state, bookNum) {
             'X-CSRFToken': getCookie('csrftoken')
             },
         }).then((res) => {
+                if(res.data?.id === undefined || res.data?.id === null) {
+                    alert("Please submit alt texts before closing this document.");
+                    return;
+                }
                 axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/' + res.data.id + '/set_status/',
                 {
                     'status': status
