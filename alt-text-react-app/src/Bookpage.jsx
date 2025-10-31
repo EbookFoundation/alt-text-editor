@@ -11,7 +11,7 @@ export default function Bookpage({bookNum, loadedImgList, setLoadedImgList, setN
     let title = iframe_ref.current?.contentDocument.querySelector("head > title")?.innerHTML ?? ("Book #" + bookNum)
 
     return(
-    <Accordion defaultActiveKey="0">
+    <Accordion defaultActiveKey="1">
         <Accordion.Item eventKey="1">
             <Accordion.Header>Now Editing: {title}</Accordion.Header>
             <BookpageChildren loadedImgList={loadedImgList} setLoadedImgList={setLoadedImgList} setNumImgs={setNumImgs} bookNum={bookNum}
