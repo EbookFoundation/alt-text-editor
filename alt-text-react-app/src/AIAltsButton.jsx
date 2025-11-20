@@ -24,7 +24,8 @@ export default function AIAltsButton({pk, setImgIdtoAltsMap}) {
             let img_list = res.data.imgs;
             let tempAltMap = {};
             for(let i = 0; i < img_list.length; i++) {
-                tempAltMap = {...tempAltMap, [img_list[i].img_id]: createAltsObj(img_list[i].id, img_list[i].alt, img_list[i].alts)};
+                tempAltMap = {...tempAltMap, [img_list[i].img_id]: createAltsObj(img_list[i].id, img_list[i].alt, 
+                                                                        img_list[i].alts, img_list[i].img_type)};
             }
             setImgIdtoAltsMap({...tempAltMap});
             setAiAlts(2);

@@ -3,12 +3,10 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
 import './css_modules/alt.css'
-import React from 'react';
 
 
 
-
-export default function UserInput({storedUserInput, setStoredUserInput, imgToggleValue, numSelected, noEditImg}) {
+export default function UserInput({storedUserInput, setStoredUserInput, imgToggleValue, numSelected, noEditImg, noEditMsg}) {
 
 
     const label = "Add / Edit Alt Text";
@@ -38,7 +36,7 @@ export default function UserInput({storedUserInput, setStoredUserInput, imgToggl
             <InputGroup>
                 <FloatingLabel label={label} controlId='userAltTextDisabled'>
                     <Form.Control disabled as='textarea' style={{"height": "100px"}}
-                    value="Please select an image to begin alt text editing."/>
+                    value="Please select an image to begin editing"/>
                 </FloatingLabel>
             </InputGroup>
         );
@@ -49,7 +47,7 @@ export default function UserInput({storedUserInput, setStoredUserInput, imgToggl
             <InputGroup>
                 <FloatingLabel label={label} controlId='userAltTextDisabled'>
                     <Form.Control disabled as='textarea' style={{"height": "100px"}}
-                    value="This image is not available for alt text editing at this time."/>
+                    value={noEditMsg}/>
                 </FloatingLabel>
             </InputGroup>
         );

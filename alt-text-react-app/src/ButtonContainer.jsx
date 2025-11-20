@@ -7,15 +7,16 @@ import SubmitAllButton from './SubmitAllButton';
 import SubmitOneButton from './SubmitOneButton';
 import AIAltsButton from "./AIAltsButton";
 import ChangeStatusButton from "./ChangeStatusButton";
+import DecorativeButton from "./DecorativeButton";
 
-import React from 'react';
-import axios from "axios";
-import { getCookie } from "./helpers";
+// import React from 'react';
+// import axios from "axios";
+// import { getCookie } from "./helpers";
 
 
 
 
-export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, 
+export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, imgIdToPKMap,
                                             imgToggleValue, numSelected, noEditImg, docPK, userSubStatus, setUserSubStatus}) {
 
     //accordion title: "working on {book title}, {book number}, {extra description if needed}"
@@ -71,6 +72,12 @@ export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMa
                 <Col className="d-grid">
                     <AIAltsButton pk={docPK} setImgIdtoAltsMap={setImgIdtoAltsMap}/>
                 </Col>
+                <Col className="d-grid">
+                    <DecorativeButton imgIdToPKMap={imgIdToPKMap} imgIdtoAltsMap={imgIdtoAltsMap} 
+                    setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue}/>
+                </Col>
+            </Row>
+            <Row className="mt-3">
                 <Col className="d-grid">
                     <ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} bookNum={bookNum}/>
                 </Col>

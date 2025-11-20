@@ -27,7 +27,7 @@ export default function ChangeStatusButton({userSubStatus, setUserSubStatus, boo
 
 
     return (
-        <Button onClick={() => set_status(username, close_or_open(), setUserSubStatus, bookNum)}>
+        <Button variant="success" onClick={() => set_status(username, close_or_open(), setUserSubStatus, bookNum)}>
             {button_text()}
         </Button>
     )

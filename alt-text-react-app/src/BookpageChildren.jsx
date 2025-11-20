@@ -43,7 +43,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         if(img_api_obj_list === null) {return;}
          
         // if pulling from local file instead of api for alt texts:
-        // const altjson = await fetch("alt67098.json").then(response => response.json());
+        // const altjson = await fetch("your_alt_json_file.txt").then(response => response.json());
         // setAlts(altjson);
 
         //await img list for state
@@ -57,7 +57,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         let tempAltMap = {};
         for(let i = 0; i < render.length; i++) {
             tempIdMap = {...tempIdMap, [render[i].img_id]: render[i].id};
-            tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts)};
+            tempAltMap = {...tempAltMap, [render[i].img_id]: createAltsObj(render[i].id, render[i].alt, render[i].alts, render[i].img_type)};
         }
         setImgIdtoPKMap({...tempIdMap});
         setImgIdtoAltsMap({...tempAltMap});
@@ -135,16 +135,6 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
                     onClick={(e) => {
                         e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
                         setNumSelected(index + 1);
-                        if(img_type === 1) {
-                            setNoEditImg(true);
-                        }
-                        // find better way to check for decorative imgs
-                        // else if(img_details.x !== null && img_details.x < 100 && img_details.y !== null && img_details.y < 100) {
-                        //     setNoEditImg(true);
-                        // }
-                        else {
-                            setNoEditImg(false);
-                        }
                         iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
                         iframe.classList.remove("flash");
                         setTimeout(function() {iframe.classList.add("flash")}, 100);

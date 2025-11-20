@@ -2,8 +2,6 @@ import './css_modules/alt.css';
 import { useState, useRef, useEffect } from 'react';
 import { getCookie } from './helpers';
 import axios from 'axios';
-import React from 'react';
-
 
 
 export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_func}) {

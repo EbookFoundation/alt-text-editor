@@ -12,7 +12,6 @@ import UserInput from './UserInput';
 import { UserContext } from './App';
 
 import { useState, useContext, useEffect } from 'react';
-import React from 'react';
 import { getCookie } from './helpers';
 import axios from 'axios';
 
@@ -25,6 +24,8 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
                                     setStoredUserInput, numSelected, noEditImg}) {
 
     const username = useContext(UserContext);
+    const default_no_edit_msg = "This image is not available for editing at this time.";
+
 
     //3 dot button on all alt text submissions
         //if you submitted, have 'edit' that allows you to edit in place then submit patch request on completion
@@ -243,21 +244,6 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
             </Container>
         );
     }
-    // before user selects image or editing is forbidden
-    if(noEditImg || imgToggleValue === '') {
-        return (
-            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
-            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
-        );
-    }
-
-    //if no alt text options, don't display accordion
-    if(imgAltObj.alt_key === null && imgAltObj.alts_arr.length === 0) {
-        return (
-            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
-            setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
-        );
-    }
 
     function PreferredVotes() {
         return (<Votes vote_identifier={"img_" + pref.img + "_alt_" + pref.id} 
@@ -304,7 +290,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
-            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} 
+            <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={default_no_edit_msg}
                 setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
         </>
     );
