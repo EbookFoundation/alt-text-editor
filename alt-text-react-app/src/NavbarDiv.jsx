@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './css_modules/nav.css'
 
 
@@ -16,6 +16,7 @@ import './css_modules/nav.css'
 export default function NavbarDiv() {
 
     const [searchValue, setSearchValue] = useState("");
+    const searchButton = useRef(null);
 
     function get_url() {
         if(searchValue === "") {return "#";}
@@ -97,12 +98,13 @@ export default function NavbarDiv() {
                 </Col>
                 <Col md='auto'>
                     {/* not sure what this should be... search new books to edit? or link to search on gutenberg.org? */}
-                    <Form className='d-flex me-2 align-self-right'>
+                    <Form className='d-flex me-2 align-self-right' onSubmit={(e) => {e.preventDefault();
+                                                                                    searchButton.current.click();}}>
                         <InputGroup className="mb-0">
                             <Form.Control placeholder='Enter E-Book Number...' onChange={(e) => setSearchValue(e.currentTarget.value)}
                             value={searchValue} aria-describedby="searchbar"  id='searchbar'
                             />
-                            <Button as="a" href="#" id="search" variant='secondary' onClick={click}>
+                            <Button as="a" href="#" id="search" variant='secondary' ref={searchButton} onClick={click}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                                 </svg>
