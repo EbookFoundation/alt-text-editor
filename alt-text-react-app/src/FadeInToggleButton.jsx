@@ -38,7 +38,7 @@ export default function FadeInToggleButton({iframe_ref, imgToggleValue, setImgTo
                 onClick={(e) => {
                     e.currentTarget.scrollIntoView({behavior: "smooth", block: "center"});
                     setNumSelected(index + 1);
-                    iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center"});
+                    iframeImgObj[img_id].scrollIntoView({behavior: "smooth", block: "center", container: "nearest"});
                     iframe.classList.remove("flash");
                     setTimeout(function() {iframe.classList.add("flash")}, 100);
                 }}>

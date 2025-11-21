@@ -96,7 +96,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
                             list_img.click(); 
                         }
                         else {
-                            img.scrollIntoView({behavior: "smooth", block: "center"});
+                            img.scrollIntoView({behavior: "smooth", block: "center", container: "nearest"});
                             setNoEditImg(true);
                         }
                     });
@@ -141,7 +141,6 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
     const filter_func = filterImgRadioValue === "all" ? () => true : (id, stored_user_input) => filterEdited(id, stored_user_input, edited)
 
     return (
-
         <Accordion.Body className="accordion_align" style={{minHeight: "40vh"}}>
             <Container>
                 <Row>
