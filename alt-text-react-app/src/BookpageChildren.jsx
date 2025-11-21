@@ -68,17 +68,47 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         //possible error occurring if list of images from website is different from list of images pulled from api
         //right now it just lets the user know there's a mismatch and deselects
 
+
     //Case: PG element references something outside of the book
         //Not available for alt text editing at this time
         //temp solution for case that should not happen (database should match DOM)
     const handleIframeLoad = (e) => {
         try {
             //remove all <a> links that do not have '#' (internal links / chapter markers)
+            let chapter_hrefs = [];
             Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => {
-                if(a.href === undefined || (a.href !== "" && a.href.match(iframe_url + "#") !== null))
+                if(a.href === undefined) {return;}
+                if(a.href !== "" && a.href.match(iframe_url + "#") !== null) {
+                    chapter_hrefs.push(a.href.split("#")[1]);
                     return;
+                }
                 a.href = "javascript:void(0)";
+            })
+
+            //funky scrolling javascript bs. prevents entire page from moving when clicking on internal links / anchors
+            let anchors = [];
+            for(const href of chapter_hrefs) {
+                anchors.push(e.currentTarget.contentDocument.getElementById(href));
+            }
+
+            Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => {
+                let idx = chapter_hrefs.indexOf(a.href.split("#")[1]);
+                a.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    anchors[idx].scrollIntoView({behavior: "instant", block: "center", container: "nearest"});
+                });
             });
+
+            // console.log(atag);
+            //     atag.addEventListener("click", (event) => {
+            //             console.log("event");
+            //             event.preventDefault();
+                        //atag.scrollIntoView({behavior: "instant", block: "nearest", container: "nearest"});
+                        // let name = a.href.split('#')[1];
+                        // let anchor = e.currentTarget.contentDocument.body.getElementsByName(name)[0];
+                        // let offset = anchor.getBoundingClientRect().top;
+                        // e.currentTarget.contentWindow.scrollBy(0, offset);
+                    //});
 
             //make images clickable to select
             const images = e.currentTarget.contentDocument.body.querySelectorAll("img");
@@ -125,7 +155,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
 
     //map images pulled from database to toggle buttons containing img elements, render in accordion body
     const mappedImages = function (img_id, img_details, index) {
-        return(<FadeInToggleButton imgToggleValue={imgToggleValue} setImgToggleValue={setImgToggleValue} iframeImgObj={iframeImgObj}
+        return(<FadeInToggleButton imgToggleValue={imgToggleValue} key={"list_" + img_id} setImgToggleValue={setImgToggleValue} iframeImgObj={iframeImgObj}
                 setNumSelected={setNumSelected} iframe_ref={iframe_ref} img_id={img_id} img_details={img_details} index={index}/>);
     }
 

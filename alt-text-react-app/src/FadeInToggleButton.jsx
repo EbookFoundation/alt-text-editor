@@ -30,7 +30,7 @@ export default function FadeInToggleButton({iframe_ref, imgToggleValue, setImgTo
 
     return (
         <Transition nodeRef={nodeRef} in={inProp} timeout={duration}>
-            {state => (<Col className='px-2 py-2' key={"list_" + img_id} ref={nodeRef} 
+            {state => (<Col className='px-2 py-2' ref={nodeRef} 
                             style={{...defaultStyle, ...transitionStyles[state]}}> 
                 <ToggleButton id={"radio_" + img_id} type="radio" name="radio" className="px-1 py-1 mx-0 my-0"
                 value={img_id} variant='outline-primary' checked={img_id === imgToggleValue}
