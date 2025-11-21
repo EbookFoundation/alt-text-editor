@@ -94,7 +94,7 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
             for(let i = 0; i < atags_with_anchors.length; i++) {
                 atags_with_anchors[i].addEventListener("click", (event) => {
                     event.preventDefault();
-                    anchors[i].scrollIntoView({behavior: "instant", block: "nearest", container: "nearest"});
+                    anchors[i].scrollIntoView({behavior: "instant", block: "start", container: "nearest"});
                 });
             }
 
