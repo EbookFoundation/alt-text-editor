@@ -97,7 +97,7 @@ export default function NavbarDiv() {
                     </Nav>
                 </Col>
                 <Col md='auto'>
-                    {/* not sure what this should be... search new books to edit? or link to search on gutenberg.org? */}
+                    {/* enter book item num -> new edit, maybe switch to search by title api at some point */}
                     <Form className='d-flex me-2 align-self-right' onSubmit={(e) => {e.preventDefault();
                                                                                     searchButton.current.click();}}>
                         <InputGroup className="mb-0">
