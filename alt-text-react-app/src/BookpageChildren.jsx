@@ -75,11 +75,11 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
     const handleIframeLoad = (e) => {
         try {
             //remove all <a> links that do not have '#' (internal links / chapter markers)
-            let chapter_hrefs = [];
+            let atags_with_anchors = [];
             Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => {
                 if(a.href === undefined) {return;}
                 if(a.href !== "" && a.href.match(iframe_url + "#") !== null) {
-                    chapter_hrefs.push(a.href.split("#")[1]);
+                    atags_with_anchors.push(a);
                     return;
                 }
                 a.href = "javascript:void(0)";
@@ -87,28 +87,16 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
 
             //funky scrolling javascript bs. prevents entire page from moving when clicking on internal links / anchors
             let anchors = [];
-            for(const href of chapter_hrefs) {
-                anchors.push(e.currentTarget.contentDocument.getElementById(href));
+            for(const atag of atags_with_anchors) {
+                anchors.push(e.currentTarget.contentDocument.getElementById(atag.href.split("#")[1]));
             }
 
-            Array.from(e.currentTarget.contentDocument.body.querySelectorAll("a")).map(a => {
-                let idx = chapter_hrefs.indexOf(a.href.split("#")[1]);
-                a.addEventListener("click", (event) => {
+            for(let i = 0; i < atags_with_anchors.length; i++) {
+                atags_with_anchors[i].addEventListener("click", (event) => {
                     event.preventDefault();
-                    anchors[idx].scrollIntoView({behavior: "instant", block: "center", container: "nearest"});
+                    anchors[i].scrollIntoView({behavior: "instant", block: "nearest", container: "nearest"});
                 });
-            });
-
-            // console.log(atag);
-            //     atag.addEventListener("click", (event) => {
-            //             console.log("event");
-            //             event.preventDefault();
-                        //atag.scrollIntoView({behavior: "instant", block: "nearest", container: "nearest"});
-                        // let name = a.href.split('#')[1];
-                        // let anchor = e.currentTarget.contentDocument.body.getElementsByName(name)[0];
-                        // let offset = anchor.getBoundingClientRect().top;
-                        // e.currentTarget.contentWindow.scrollBy(0, offset);
-                    //});
+            }
 
             //make images clickable to select
             const images = e.currentTarget.contentDocument.body.querySelectorAll("img");
