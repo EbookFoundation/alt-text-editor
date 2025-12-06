@@ -104,37 +104,22 @@ export function set_preferred(img_key, new_pref_alt_key, current_alts_obj) {
 
 }
 
-export function set_status(username, status, set_user_status_state, bookNum) {
+export function set_status(status, set_user_status_state, doc_key) {
     
-    axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + username +'&item=' + bookNum,
+    axios.post(import.meta.env.DATABASE_URL + '/api/documents/' + doc_key + '/set_status/',
+        {
+            'status': status
+        },
         {'withCredentials': true,
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
             },
-        }).then((res) => {
-                if(res.data?.id === undefined || res.data?.id === null) {
-                    alert("Please submit alt texts before closing this document.");
-                    return;
-                }
-                axios.post(import.meta.env.DATABASE_URL + '/api/user_submissions/' + res.data.id + '/set_status/',
-                {
-                    'status': status
-                },
-                {'withCredentials': true,
-                    headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                    },
-                }).then((post_res) => 
-                    set_user_status_state(post_res.data.status)
-                ).catch((post_error) => {
-                    console.log(post_error);
-                    set_user_status_state("In Progress");
-                });
-        }).catch((error) => {
+        }).then((res) => 
+            set_user_status_state(res.data.status)
+        ).catch((error) => {
             console.log(error);
+            set_user_status_state(1);
         });
-    }
+}

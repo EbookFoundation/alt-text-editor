@@ -61,10 +61,10 @@ export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMa
             <Row>
                 <Col className="d-grid">
                     <SubmitOneButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} setUserSubStatus={setUserSubStatus}
-                    storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected} noEditImg={noEditImg}/>
+                    storedUserInput={storedUserInput} imgToggleValue={imgToggleValue} numSelected={numSelected} noEditImg={noEditImg} docPK={docPK}/>
                 </Col>
                 <Col className="d-grid">
-                    <SubmitAllButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} 
+                    <SubmitAllButton bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} docPK={docPK}
                     storedUserInput={storedUserInput} noEditImg={noEditImg} numSelected={numSelected} setUserSubStatus={setUserSubStatus}/>
                 </Col>
             </Row>
@@ -79,7 +79,7 @@ export default function ButtonContainer({storedUserInput, bookNum, imgIdtoAltsMa
             </Row>
             <Row className="mt-3">
                 <Col className="d-grid">
-                    <ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} bookNum={bookNum}/>
+                    <ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} docPK={docPK}/>
                 </Col>
             </Row>
         </Container>

@@ -16,7 +16,6 @@ import axios from 'axios';
 import { getCookie } from './helpers';
 import './css_modules/App.css';
 import NoImage from './NoImage';
-import ChangeStatusButton from './ChangeStatusButton';
 import AltDisplay from './AltDisplay';
 import ButtonDisplay from './ButtonDisplay';
 
@@ -31,7 +30,7 @@ function App() {
   const [bookNum, setBookNum] = useState(params.get('book') ?? '67098');
 
   const [docExists, setDocExists] = useState(true);
-  const [userSubStatus, setUserSubStatus] = useState("No Progress");
+  const [userSubStatus, setUserSubStatus] = useState(0);
 
 
   const [numSelected, setNumSelected] = useState(0);
@@ -64,6 +63,8 @@ function App() {
     }).then((res) => {
         setDocExists(true);
         setDocPK(res.data.id);
+        setUserSubStatus(res.data.status);
+        if(res.data.status === 2) {return;}
         axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username', //get username for Context
           {'withCredentials': true,
             headers: {
@@ -85,7 +86,6 @@ function App() {
           ).then((response) => {
             let oldUserInput = {};
             if(response.status === 200) {
-              setUserSubStatus(response.data.status);
               for (const alt_created of response.data.alts_created) {
                 oldUserInput = {...oldUserInput, [alt_created.img]: alt_created.text}
               }

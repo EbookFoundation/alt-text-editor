@@ -12,7 +12,7 @@ export default function AltDisplay({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, 
 
     const imgAltObj = imgIdtoAltsMap[imgToggleValue];
 
-    if(userSubStatus === "Complete") { //finished
+    if(userSubStatus === 2) { // "Complete"
         return(<UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={book_complete}
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={true}/>);
     }

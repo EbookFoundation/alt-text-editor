@@ -8,7 +8,7 @@ import { getCookie, set_status, updateAltsObj } from './helpers';
 
 
 export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, numSelected, imgIdtoAltsMap, 
-                                            setImgIdtoAltsMap, setUserSubStatus}) {
+                                            setImgIdtoAltsMap, setUserSubStatus, docPK}) {
 
 
     const username = useContext(UserContext); 
@@ -42,7 +42,7 @@ export default function SubmitAllButton({bookNum, storedUserInput, noEditImg, nu
                 setImgIdtoAltsMap({...imgIdtoAltsMap, [alt_created.img_id]: {...current_alts_obj}});
             }
             localStorage.setItem(bookNum, JSON.stringify(storedUserInput));
-            set_status(username, 1, setUserSubStatus, bookNum);
+            set_status(1, setUserSubStatus, docPK);
         }).catch((error) => {
             console.log(error);
         });

@@ -6,7 +6,7 @@ import { useContext } from 'react';
 import { UserContext } from './App';
 
 
-export default function SubmitOneButton({imgIdtoAltsMap, setImgIdtoAltsMap, noEditImg, bookNum,
+export default function SubmitOneButton({imgIdtoAltsMap, setImgIdtoAltsMap, noEditImg, bookNum, docPK,
                                             storedUserInput, imgToggleValue, numSelected, setUserSubStatus}) {
 
     const username = useContext(UserContext);
@@ -49,7 +49,7 @@ export default function SubmitOneButton({imgIdtoAltsMap, setImgIdtoAltsMap, noEd
                 localStorage.setItem(bookNum, JSON.stringify(localStorageUserInput));
             }
 
-            set_status(username, 1, setUserSubStatus, bookNum);
+            set_status(1, setUserSubStatus, docPK);
         }).catch((error) => {
             console.log(error);
         });
