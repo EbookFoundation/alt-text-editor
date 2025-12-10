@@ -116,9 +116,16 @@ export function set_status(status, set_user_status_state, doc_key) {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
             },
-        }).then((res) => 
-            set_user_status_state(res.data.status)
-        ).catch((error) => {
+        }).then((res) => {
+            if (res.data.status != status && res.data.status == 1) {
+                alert("We have received your submission and marked it for review. An authorized user will close this book after reviewing.");
+            }
+            else if (res.data.status != status && res.data.status == 2) {
+                alert("You are not authorized to reopen this book for editing.");
+            }
+            else {set_user_status_state(res.data.status);}
+
+        }).catch((error) => {
             console.log(error);
             set_user_status_state(1);
         });
