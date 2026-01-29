@@ -15,6 +15,8 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
 
     const [voteType, setVoteType] = useState("");
 
+
+    //set user's vote in altpoet database
     async function vote(vote_type) {
         setVoteType(vote_type);
         await axios.post(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/vote/',
@@ -35,6 +37,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
         .catch((error) => console.log(error));
     }
 
+    // get prev votes from altpoet database
     async function get_vote() {
         if(voteType !== "") {return;}
         await axios.get(import.meta.env.DATABASE_URL + '/api/alts/' + pk + '/get_vote/',
@@ -66,6 +69,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
         });
     }
 
+    // if haven't voted yet, reset all
     function set_all_false() {
         if(upvoteRef.current == null || downvoteRef.current == null) {return;}
         upvoteRef.current.checked = false;
@@ -110,6 +114,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
         sort_func();
     }
 
+    // change color based on which vote is selected
     const upvoteStyle = {
         "backgroundColor": upvoteChecked ? "#59a9f9" : "inherit",
     }
@@ -119,6 +124,7 @@ export default function Votes({vote_identifier, pk, num_votes, alt_obj, sort_fun
     }
 
 
+    // svg + path = up and down arrows
     return (
         <span className="input-group-text">
             <input className="form-check-input input-upvote" type="checkbox" name="altTextSubmission" 

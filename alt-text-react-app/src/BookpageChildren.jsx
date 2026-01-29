@@ -127,10 +127,12 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
     };
     
 
+    // preload imgs
     useEffect(() => {
         getImagesAltsAndPKs();
     }, []);
 
+    // preload iframe
     useEffect(() => {
         const iframe = iframe_ref.current;
 
@@ -142,11 +144,13 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
     }, []);
 
     //map images pulled from database to toggle buttons containing img elements, render in accordion body
+        //now fades in instead of loading skeleton first
     const mappedImages = function (img_id, img_details, index) {
         return(<FadeInToggleButton imgToggleValue={imgToggleValue} key={"list_" + img_id} setImgToggleValue={setImgToggleValue} iframeImgObj={iframeImgObj}
                 setNumSelected={setNumSelected} iframe_ref={iframe_ref} img_id={img_id} img_details={img_details} index={index}/>);
     }
 
+    // filter by if user has submitted or started writing alt texts (inverse if bool = false)
     function filterEdited(id, stored_user_input, bool) {
         if(stored_user_input !== undefined && id in stored_user_input) {
             return bool;
@@ -205,23 +209,3 @@ export default function BookpageChildren({loadedImgList, setLoadedImgList, setNu
         </Accordion.Body>
     );
 }
-
-    //placeholders for api load wait
-    // return (
-    //     <Accordion.Body className='accordion_align'>
-    //             <Container style={{"minWidth": "100%", "width": "0", "height": "40vh"}}>
-    //                 <Row className='align-items-center overflow-scroll' style={{"maxWidth": "100%", overflowX: "auto"}}>
-    //                     {
-    //                         Array.from({length: 6})
-    //                         .map((_, index) => (
-    //                             <Col className='px-2 py-2' key={index}>
-    //                                 <svg width='170' height='204.73'>
-    //                                     <rect width="150" height="184.73" x='10' y='10' rx='10' ry='10' fill="#D3D3D3" strokeWidth="1" stroke="blue"></rect>
-    //                                 </svg>
-    //                             </Col>
-    //                         ))
-    //                     }
-    //                 </Row>
-    //             </Container>
-    //         </Accordion.Body>
-    // );

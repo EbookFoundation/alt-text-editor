@@ -12,25 +12,28 @@ export default function AltDisplay({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, 
 
     const imgAltObj = imgIdtoAltsMap[imgToggleValue];
 
-    if(userSubStatus === 2) { // "Complete"
+    // "Complete" (not open for editing)
+    if(userSubStatus === 2) { 
         return(<UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={book_complete}
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={true}/>);
     }
-    else if(noEditImg || imgToggleValue === '' || imgAltObj == undefined) { // not yet selected or loaded
+    // img(s) not yet selected or loaded
+    else if(noEditImg || imgToggleValue === '' || imgAltObj == undefined) { 
         return (
             <UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={default_no_edit_msg}
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>
         );
     }
-    else if(imgAltObj.img_type === 1) { //decorative image
+    //decorative image
+    else if(imgAltObj.img_type === 1) {
         return(<UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={decorative_msg}
             setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={true}/>);
     }
-    else if(imgAltObj.alt_key === null && imgAltObj.alts_arr.length === 0) { // no accordion if no current alt texts
+    // accordion is not displayed if there are no alt texts for img
+    else if(imgAltObj.alt_key === null && imgAltObj.alts_arr.length === 0) {
         return(<UserInput imgToggleValue={imgToggleValue} storedUserInput={storedUserInput} noEditMsg={default_no_edit_msg}
                     setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>);
     }
-
     //default
     return (<AltTexts bookNum={bookNum} imgIdtoAltsMap={imgIdtoAltsMap} setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue} 
                   storedUserInput={storedUserInput} setStoredUserInput={setStoredUserInput} numSelected={numSelected} noEditImg={noEditImg}/>);

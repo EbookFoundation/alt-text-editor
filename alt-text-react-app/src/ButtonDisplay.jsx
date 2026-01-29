@@ -9,7 +9,7 @@ export default function ButtonDisplay({bookNum, storedUserInput, setImgIdtoAltsM
     if(userSubStatus === 2) { //reopen after set to "Complete"
         return(<ChangeStatusButton userSubStatus={userSubStatus} setUserSubStatus={setUserSubStatus} bookNum={bookNum} docPK={docPK}/>);
     }
-    else if(imgIdtoAltsMap[imgToggleValue]?.img_type === 1) {
+    else if(imgIdtoAltsMap[imgToggleValue]?.img_type === 1) { // no editing if img is decorative
         return(<DecorativeButton imgIdToPKMap={imgIdToPKMap} imgIdtoAltsMap={imgIdtoAltsMap} 
         setImgIdtoAltsMap={setImgIdtoAltsMap} imgToggleValue={imgToggleValue}/>);
     }

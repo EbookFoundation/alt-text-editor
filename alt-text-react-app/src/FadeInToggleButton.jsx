@@ -8,6 +8,10 @@ import { useState, useRef } from "react";
 export default function FadeInToggleButton({iframe_ref, imgToggleValue, setImgToggleValue, iframeImgObj, setNumSelected,
                                                 img_id, img_details, index}) {
 
+    // button that has img as display and toggles editing of alt text per image
+    // scrolls to img in iframe when clicked
+    // fades in on individual load
+
     const [inProp, setInProp] = useState(false);
     const nodeRef = useRef(null);
     const iframe = iframe_ref.current;    

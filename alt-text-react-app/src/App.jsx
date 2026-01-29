@@ -8,16 +8,14 @@ import Col from 'react-bootstrap/Col';
 
 import Bookpage from './Bookpage';
 import NavbarDiv from './NavbarDiv';
-import AltTexts from './AltTexts';
-import ButtonContainer from './ButtonContainer';
 import IframeNav from './IframeNav';
+import NoImage from './NoImage';
+import AltDisplay from './AltDisplay';
+import ButtonDisplay from './ButtonDisplay';
 
 import axios from 'axios';
 import { getCookie } from './helpers';
 import './css_modules/App.css';
-import NoImage from './NoImage';
-import AltDisplay from './AltDisplay';
-import ButtonDisplay from './ButtonDisplay';
 
 export const UserContext = createContext("");
 
@@ -51,67 +49,68 @@ function App() {
   const prod_url = 'https://altpoet.ebookfoundation.org:8443/cache/epub/' + bookNum + '/pg' + bookNum + '-images.html';
   const iframe_url = import.meta.env.PROD ? prod_url : '/iframe';
 
+  const axios_headers = {'withCredentials': true,
+                          headers: {'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCookie('csrftoken')}}
+
+
+  //preload all necessary user data before loading editor
   useEffect(() => {
 
     //get document by item #
-    axios.get(import.meta.env.DATABASE_URL + '/api/documents/doc-check/?project=Project+Gutenberg&item=' + bookNum,
-    {'withCredentials': true,
-      headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCookie('csrftoken')
-      },
-    }).then((res) => {
+    axios.get(import.meta.env.DATABASE_URL + '/api/documents/doc-check/?project=Project+Gutenberg&item=' + bookNum, axios_headers)
+    .then((res) => {
         setDocExists(true);
         setDocPK(res.data.id);
         setUserSubStatus(res.data.status);
         if(res.data.status === 2) {return;}
-        axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username', //get username for Context
-          {'withCredentials': true,
-            headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-            },
-          })
-        .then((res) => {
-          setUsername(res.data.username); // get user submission if exists
-          axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + res.data.username +'&item=' + bookNum,
-            {'withCredentials': true,
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-                },
-            }
-          ).then((response) => {
-            let oldUserInput = {};
-            if(response.status === 200) {
-              for (const alt_created of response.data.alts_created) {
-                oldUserInput = {...oldUserInput, [alt_created.img]: alt_created.text}
-              }
-              localStorage.setItem(bookNum, JSON.stringify(oldUserInput));
-              setStoredUserInput(oldUserInput);
-            }
-            else {
-              oldUserInput = localStorage.getItem(bookNum);
-              if(oldUserInput !== null && oldUserInput !== undefined) {
-                setStoredUserInput(JSON.parse(oldUserInput));
-              }
-            }
-          }).catch((error) => {
-            console.log(error);
-          })
-        })
-        .catch((error) => {
-          console.log("No user found: " + error);
-          setUsername("No User Found");
-        });
+        get_username();
       }).catch((error) => {
           console.log(error);
           setDocExists(false);
           return;
         });
   }, []);
+
+
+  function get_user_submission(res) {
+    axios.get(import.meta.env.DATABASE_URL + '/api/user_submissions/?username=' + res.data.username +'&item=' + bookNum, axios_headers)
+    .then((response) => {
+      store_in_local(response);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+
+  function get_username() {
+    axios.get(import.meta.env.DATABASE_URL + '/api/users/get-username', axios_headers) //get username for Context
+    .then((res) => {
+        setUsername(res.data.username);
+        get_user_submission(res);
+      }).catch((error) => {
+        console.log("No user found: " + error);
+        setUsername("No User Found");
+      });
+  }
+
+  function store_in_local(response) {
+    let oldUserInput = {};
+    if(response.status === 200) {
+      for (const alt_created of response.data.alts_created) {
+        oldUserInput = {...oldUserInput, [alt_created.img]: alt_created.text}
+      }
+      localStorage.setItem(bookNum, JSON.stringify(oldUserInput));
+      setStoredUserInput(oldUserInput);
+    }
+    else {
+      oldUserInput = localStorage.getItem(bookNum);
+      if(oldUserInput !== null && oldUserInput !== undefined) {
+        setStoredUserInput(JSON.parse(oldUserInput));
+      }
+    }
+  }
   
   // if doc is not in database, return alternative page explaining
   if(!docExists) {
@@ -123,7 +122,7 @@ function App() {
     );
   }
 
-  //editor
+  // main app
   return (
     <UserContext.Provider value={username}>
       <NavbarDiv/>

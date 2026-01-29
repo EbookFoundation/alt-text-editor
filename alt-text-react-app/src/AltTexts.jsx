@@ -26,45 +26,6 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
     const username = useContext(UserContext);
     const default_no_edit_msg = "This image is not available for editing at this time.";
 
-
-    //3 dot button on all alt text submissions
-        //if you submitted, have 'edit' that allows you to edit in place then submit patch request on completion
-        //if other agent submitted, copy text to 'new alt text' field for editing and a new submission
-
-    //accordion menu to hide / display all submitted alt texts, so you can see image while writing
-
-    //return img obj instead of alt obj when sending 201? up for discussion
-        //see update button comment (two users updating same book)
-
-    //display source name to the right of alt text (agent)
-        //name of source but no user - special case
-    //instead of radio buttons, reddit upvote/downvote system
-        //keep track in "status" key in table, sort by status rating, hide negative status objs until user requests to see
-        //when users start being added, endorsement table to keep track (backend)
-            //keep in mind that status is not displayed yet, be ready to refactor to display status
-        //add ai suggestion to this reddit post style list
-    //make preferred alt text display visually distinct (border, color, etc.)
-    //save user input alt text locally with save button, make it stateful on reload
-        //start on image that we left off on
-        //for later: alert popup on reload to save before reloading
-    //update button: pull img obj selected, update alt text list
-
-    //presentational elements:
-        //have some feature to be able to mark as presentational, mark as one of two options as radio list
-        //"This image is adequately described by nearby text."
-        //"This is a presentational image... blah blah"
-        //do not display or have any editable alt text on these <imgs>
-        //first as button, then as checkdown list once above gets working adequately
-            //checkdown list with user display (alt text edited, unedited, presentational, no objs yet, submitted, etc.)
-
-    //img "type" field:
-        //0: normal
-        //1: purely decorational
-        //2: cover
-        //3: button
-        //-1: other?
-
-    // Create refs array for dynamic alt texts
     const [disabledStates, setDisabledStates] = useState({});
     const [preferredDisabled, setPreferredDisabled] = useState(true);
     const [textStates, setTextStates] = useState({});
@@ -75,6 +36,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
     const imgAltObj = imgIdtoAltsMap[imgToggleValue];
     const pref = imgAltObj?.preferred_alt_text;
   
+    //initialize alt text states
     useEffect(() => {
         if (imgAltObj?.alts_arr) {
             const initialTexts = {};
@@ -94,57 +56,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
         }
     }, [map, imgAltObj]);
 
-
-    // function editExistingAltText(alt_id) {
-    //     if(!disabledStates[alt_id]) {
-    //         try {
-    //             patchSubmittedText(alt_id, textStates[alt_id]);
-    //         }
-    //         catch(error) {
-    //             alert("Failed to update alt text: " + error);
-    //             return;
-    //         }
-    //     }
-    //     setDisabledStates(prev => ({
-    //       ...prev,
-    //       [alt_id]: !prev[alt_id]
-    //     }));
-    // };
-
-    // function editPreferredAltText(alt_id) {
-    //     if(!preferredDisabled) {
-    //         try {
-    //             patchSubmittedText(alt_id, preferredText);
-    //         }
-    //         catch(error) {
-    //             alert("Failed to update preferred alt text: " + error);
-    //             return;
-    //         }
-    //     }
-    //     setPreferredDisabled(!preferredDisabled);
-    // }
-
-    // async function patchSubmittedText(alt_id, text) {
-    //     axios.patch(import.meta.env.DATABASE_URL + '/api/alts/' + alt_id + "/",
-    //     {
-    //         "text": text
-    //     },
-    //     {'withCredentials': true,
-    //         headers: {
-    //         'Accept': 'application/json',
-    //         'Content-Type': 'application/json',
-    //         'X-CSRFToken': getCookie('csrftoken')
-    //         },
-    //     }) // maybe add Bootstrap <Alert> here instead of vanilla js?
-    // }
-
-    // const handleAltTextChange = (alt_id, newText) => {
-    //     setTextStates(prev => ({
-    //       ...prev,
-    //       [alt_id]: newText
-    //     }));
-    // };
-      
+    
     const handlePreferredTextChange = (e) => {
         setPreferredText(e.target.value);
     };
@@ -186,6 +98,8 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
         });
     }
 
+    // these two buttons display on alt texts (delete if user's, copy if others')
+
     function DeleteButton({alt_key, class_name}) {
         return (
             <Button className={class_name} 
@@ -221,7 +135,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
     }
 
     
-
+    // map alts arr to render in accordion
     const mappedAlts = (alt_obj, alt_text, img_key, alt_key, source, votes, sort_func, index) => {
 
         source = source ?? "Project Gutenberg"
@@ -245,6 +159,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
         );
     }
 
+    // preferred alt and votes have diff background and priority
     function PreferredVotes() {
         return (<Votes vote_identifier={"img_" + pref.img + "_alt_" + pref.id} 
         pk={pref.id} num_votes={pref.votes} alt_obj={pref} sort_func={() => {}}></Votes>);
@@ -271,6 +186,7 @@ export default function AltTexts({bookNum, imgIdtoAltsMap, setImgIdtoAltsMap, im
         );
     }
 
+    //alts sorted by votes
     function sort_alts_arr(alts_arr) {
         const sorted_arr = alts_arr.toSorted((a, b) => b.votes - a.votes);
         setImgIdtoAltsMap({...imgIdtoAltsMap, [imgToggleValue]: {...imgAltObj, "alts_arr": sorted_arr}});

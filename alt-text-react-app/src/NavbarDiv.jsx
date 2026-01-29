@@ -18,6 +18,7 @@ export default function NavbarDiv() {
     const [searchValue, setSearchValue] = useState("");
     const searchButton = useRef(null);
 
+    // url to get next document when using search bar
     function get_url() {
         if(searchValue === "") {return "#";}
         if(import.meta.env.PROD) {

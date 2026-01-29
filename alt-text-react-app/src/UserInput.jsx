@@ -12,6 +12,7 @@ export default function UserInput({storedUserInput, setStoredUserInput, imgToggl
     const label = "Add / Edit Alt Text";
 
 
+    // update local storage as user types (even if doesn't save or submit when closing page, should be restored when reopening tab)
     function updateUserInputState(e) {
         if(numSelected === 0) {return;}
         if(e.currentTarget.value === "") {
@@ -30,6 +31,8 @@ export default function UserInput({storedUserInput, setStoredUserInput, imgToggl
         }
         return storedUserInput[imgToggleValue];
     }
+
+    // text editing space (form.control)
 
     if(numSelected === 0) {
         return (

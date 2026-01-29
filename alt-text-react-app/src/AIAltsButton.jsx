@@ -9,6 +9,7 @@ export default function AIAltsButton({pk, setImgIdtoAltsMap}) {
 
     const [aiAlts, setAiAlts] = useState(0);
 
+    // get ai suggestions (may only work in prod if you don't have LLM API key in backend / database)
     const getAIAlts = () => {
         setAiAlts(1);
         axios.post(import.meta.env.DATABASE_URL + '/api/documents/' + pk + '/add_ai_alts/',
