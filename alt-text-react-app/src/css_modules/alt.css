@@ -1,0 +1,66 @@
+.input-group-text {
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.input-group-text input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+.vote {
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.preferred label::after {
+    background-color: rgb(241, 229, 172) !important;
+}
+
+.preferred textarea {
+    background-color: rgb(241, 229, 172) !important;
+}
+
+.coltext {
+    display: inline-block;
+    position: relative;
+}
+  
+.overtext {
+    position: absolute;
+    top: 7px;
+    right: 20px;
+    z-index: 1000;
+    padding-top: 0;
+    padding-bottom: 0;
+    --bs-btn-color: #0a58ca;
+    --bs-btn-bg: #e9ecef;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #0d6efd;
+    --bs-btn-hover-bg: #e9ecef;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #e9ecef;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-shadow: transparent;
+}
+
+.savebutton {
+    --bs-btn-bg: #fff;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-active-bg: #fff;
+    --bs-btn-active-color: #e9ecef;
+}
+
+.prefovertext {
+    --bs-btn-bg: rgb(241, 229, 172);
+    --bs-btn-hover-bg: rgb(241, 229, 172);
+    --bs-btn-active-bg: rgb(241, 229, 172);
+}
+
+
+
+

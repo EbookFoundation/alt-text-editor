@@ -17,6 +17,11 @@
                 optional / not pressing: newer elements use <figure> instead of <img> sometimes
                     figure out how to include in list, and also highlight difference
 
+            Meeting 3:
+              Update UI to look fancier
+              Add save button next to submit to save edited alt text on main branch (not api post)
+              Later: update api calls for img objs instead of img urls
+              multiple alt texts support?
 -->
 
 # alt-text-editor

@@ -6,12 +6,32 @@ import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
-import './nav.css'
+import { useState, useRef } from 'react';
+import './css_modules/nav.css'
 
 
 
 export default function NavbarDiv() {
+
+    const [searchValue, setSearchValue] = useState("");
+    const searchButton = useRef(null);
+
+    // url to get next document when using search bar
+    function get_url() {
+        if(searchValue === "") {return "#";}
+        if(import.meta.env.PROD) {
+            return "https://altpoet.ebookfoundation.org:8443/alttext/?book=" + searchValue;
+        }
+        else {
+            return "http://127.0.0.1:5173/?book=" + searchValue;
+        }
+    }
+
+    const click = (e) => {
+        e.currentTarget.href = get_url();
+    }        
 
     return (
     <Navbar className="bg-info-subtle border border-info-subtle py-0 mb-2">
@@ -28,6 +48,9 @@ export default function NavbarDiv() {
             <Row>
                 <Col className='px-0' xs lg="8.5">
                         <Nav>
+                        <Nav.Link href="https://altpoet.ebookfoundation.org/">
+                           Home
+                        </Nav.Link>
                         <NavDropdown title="About">
                             <NavDropdown.Item href='https://www.gutenberg.org/about/'>About Project Gutenberg</NavDropdown.Item>
                             <NavDropdown.Item href='https://www.gutenberg.org/policy/collection_development.html'>Collection Development</NavDropdown.Item>                                       
@@ -69,15 +92,24 @@ export default function NavbarDiv() {
 
                     
                         </NavDropdown>
+                        <Nav.Link href="https://altpoet.ebookfoundation.org/alttext/">
+                            Guide to Good Alt Texts
+                        </Nav.Link>
                     </Nav>
                 </Col>
                 <Col md='auto'>
-                    <Form className='d-flex me-2 align-self-right'>
+                    {/* enter book item num -> new edit, maybe switch to search by title api at some point */}
+                    <Form className='d-flex me-2 align-self-right' onSubmit={(e) => {e.preventDefault();
+                                                                                    searchButton.current.click();}}>
                         <InputGroup className="mb-0">
-                            <Form.Control
-                            aria-describedby="basic-addon2"
+                            <Form.Control placeholder='Enter E-Book Number...' onChange={(e) => setSearchValue(e.currentTarget.value)}
+                            value={searchValue} aria-describedby="searchbar"  id='searchbar'
                             />
-                            <InputGroup.Text id="basic-addon2">Search</InputGroup.Text>
+                            <Button as="a" href="#" id="search" variant='secondary' ref={searchButton} onClick={click}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                </svg>
+                            </Button>
                         </InputGroup>
                     </Form>
                 </Col>
