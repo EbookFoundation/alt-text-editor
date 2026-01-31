@@ -1,0 +1,6 @@
+.nav-item.dropdown .dropdown-menu.show {
+   --bs-dropdown-bg: var(--bs-info-bg-subtle);
+   --bs-dropdown-link-hover-bg: var(--bs-primary-bg-subtle);
+   --bs-dropdown-link-active-bg: var(--bs-primary-border-subtle);
+}
+
